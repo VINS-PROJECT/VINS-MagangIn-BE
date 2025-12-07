@@ -63,7 +63,8 @@ export default function KalenderPage() {
   };
 
   const saveAgenda = () => {
-    if (!formData.title || !formData.date) return alert("Isi dulu semua field!");
+    if (!formData.title || !formData.date)
+      return alert("Isi semua form terlebih dahulu!");
 
     if (formData.id) {
       setAgendaList((prev) =>
@@ -72,10 +73,7 @@ export default function KalenderPage() {
     } else {
       setAgendaList((prev) => [
         ...prev,
-        {
-          ...formData,
-          id: Math.random().toString(36).substring(2, 9),
-        },
+        { ...formData, id: Math.random().toString(36).substring(2, 9) },
       ]);
     }
     setShowForm(false);
@@ -87,105 +85,104 @@ export default function KalenderPage() {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 text-gray-800">
 
       {/* Header */}
       <div className="flex justify-between items-center">
         <button
           onClick={handlePrevMonth}
-          className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition"
+          className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition text-blue-700"
         >
           {"<"}
         </button>
 
-        <h2 className="text-xl font-bold">
+        <h2 className="text-2xl font-bold text-blue-700">
           {monthNames[currentMonth]} {currentYear}
         </h2>
 
         <button
           onClick={handleNextMonth}
-          className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition"
+          className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition text-blue-700"
         >
           {">"}
         </button>
       </div>
 
-      {/* weekdays */}
-      <div className="grid grid-cols-7 gap-2 text-center text-violet-300 font-semibold">
+      {/* Weeknames */}
+      <div className="grid grid-cols-7 gap-1 md:gap-2 text-center font-semibold text-gray-600">
         {weekdays.map((d) => (
           <div key={d}>{d}</div>
         ))}
       </div>
 
-      {/* dates */}
-      <div className="grid grid-cols-7 gap-2">
+      {/* Dates */}
+      <div className="grid grid-cols-7 gap-1 md:gap-2">
         {Array.from({ length: monthOffset }).map((_, i) => (
           <div key={`offset-${i}`} className="h-24 rounded-xl" />
         ))}
 
         {Array.from({ length: daysInMonth }, (_, i) => {
           const date = i + 1;
-          const dateStr = `${currentYear}-${String(
-            currentMonth + 1
-          ).padStart(2, "0")}-${String(date).padStart(2, "0")}`;
+          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+            2,
+            "0"
+          )}-${String(date).padStart(2, "0")}`;
 
           const agendas = agendaList.filter((a) => a.date === dateStr);
 
           return (
             <motion.div
               key={date}
-              whileHover={{ scale: 1.03 }}
-              className="p-2 h-24 border border-white/10 rounded-xl
-              bg-white/5 hover:bg-white/10 cursor-pointer overflow-y-auto"
-              onClick={() => agendas.length === 0 ? openAddAgenda(dateStr) : setShowDetail({ dateStr, agendas })}
+              whileHover={{ scale: 1.04 }}
+              onClick={() =>
+                agendas.length === 0
+                  ? openAddAgenda(dateStr)
+                  : setShowDetail({ dateStr, agendas })
+              }
+              className="p-2 h-24 rounded-xl cursor-pointer border border-blue-200
+              bg-blue-50 hover:bg-blue-100 transition overflow-y-auto"
             >
-              <p className="text-sm font-semibold text-violet-300">{date}</p>
+              <p className="text-sm font-bold text-blue-700">{date}</p>
 
               {agendas.map((a) => (
-                <div
+                <p
                   key={a.id}
-                  className="mt-1 p-1 rounded bg-violet-600 text-[10px] text-white"
+                  className="mt-1 p-1 rounded bg-blue-600 text-[10px] text-white truncate"
                 >
                   {a.title}
-                </div>
+                </p>
               ))}
             </motion.div>
           );
         })}
       </div>
 
-      {/* DETAIL MODAL */}
+      {/* Detail Modal */}
       {showDetail && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-[420px] bg-[#131822] rounded-xl p-6 border border-white/10"
+            className="w-full max-w-md bg-white rounded-xl p-6 border border-blue-200 shadow-lg"
           >
-            <h3 className="text-xl font-bold text-violet-300 mb-4">
+            <h3 className="text-lg font-bold text-blue-700 mb-4">
               Agenda {showDetail.dateStr}
             </h3>
 
             {showDetail.agendas.map((agenda) => (
-              <div
-                key={agenda.id}
-                className="p-3 rounded-xl bg-white/10 mb-3"
-              >
-                <p><strong>{agenda.title}</strong></p>
-                <p className="text-sm text-gray-300">Jam: {agenda.time || "-"}</p>
-                <p className="text-sm text-gray-300">Lokasi: {agenda.location || "-"}</p>
-
-                <div className="flex justify-end mt-3 gap-2">
-                  <button
-                    className="text-yellow-400 hover:text-yellow-300"
-                    onClick={() => openEditAgenda(agenda)}
-                  >
+              <div key={agenda.id} className="p-3 rounded-lg bg-blue-50 border border-blue-200 mb-3">
+                <p className="font-medium">{agenda.title}</p>
+                <p className="text-sm text-gray-600">
+                  Jam: {agenda.time || "-"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Lokasi: {agenda.location || "-"}
+                </p>
+                <div className="flex justify-end gap-2 mt-3">
+                  <button className="text-blue-700 hover:text-blue-600" onClick={() => openEditAgenda(agenda)}>
                     <Pencil size={18} />
                   </button>
-                  <button
-                    className="text-red-400 hover:text-red-300"
-                    onClick={() => deleteAgenda(agenda.id)}
-                  >
+                  <button className="text-red-600 hover:text-red-500" onClick={() => deleteAgenda(agenda.id)}>
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -195,13 +192,13 @@ export default function KalenderPage() {
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => openAddAgenda(showDetail.dateStr)}
-                className="px-3 py-2 bg-violet-600 rounded-lg hover:bg-violet-500 text-sm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
               >
-                Tambah Agenda
+                + Tambah Agenda
               </button>
               <button
                 onClick={() => setShowDetail(null)}
-                className="px-3 py-2 border border-white/20 rounded-lg text-sm"
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
               >
                 Tutup
               </button>
@@ -210,23 +207,28 @@ export default function KalenderPage() {
         </div>
       )}
 
-      {/* FORM MODAL */}
+      {/* Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-[400px] bg-[#141922] rounded-xl p-6 border border-white/10 shadow-xl"
+            className="w-full max-w-md bg-white rounded-xl p-6 border border-blue-200 shadow-xl"
           >
-            <h3 className="text-lg font-bold text-violet-300 mb-3">
-              {formData.id ? "Edit Agenda" : "Tambah Agenda"}
-            </h3>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-bold text-blue-700">
+                {formData.id ? "Edit Agenda" : "Tambah Agenda"}
+              </h3>
+              <button className="text-red-600 hover:text-red-500" onClick={() => setShowForm(false)}>
+                <X size={18} />
+              </button>
+            </div>
 
             <div className="space-y-3">
               <input
                 type="text"
                 placeholder="Nama Kegiatan"
-                className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20"
+                className="w-full px-3 py-2 rounded-lg border border-blue-200 bg-white focus:ring-2 focus:ring-blue-600"
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
@@ -234,7 +236,7 @@ export default function KalenderPage() {
               />
               <input
                 type="time"
-                className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20"
+                className="w-full px-3 py-2 rounded-lg border border-blue-200 bg-white focus:ring-2 focus:ring-blue-600"
                 value={formData.time}
                 onChange={(e) =>
                   setFormData({ ...formData, time: e.target.value })
@@ -243,7 +245,7 @@ export default function KalenderPage() {
               <input
                 type="text"
                 placeholder="Lokasi"
-                className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20"
+                className="w-full px-3 py-2 rounded-lg border border-blue-200 bg-white focus:ring-2 focus:ring-blue-600"
                 value={formData.location}
                 onChange={(e) =>
                   setFormData({ ...formData, location: e.target.value })
@@ -253,13 +255,13 @@ export default function KalenderPage() {
 
             <div className="flex justify-between gap-2 mt-4">
               <button
-                className="px-3 py-2 bg-violet-600 rounded-lg hover:bg-violet-500 text-sm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500"
                 onClick={saveAgenda}
               >
                 Simpan
               </button>
               <button
-                className="px-3 py-2 border border-white/20 rounded-lg text-sm"
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
                 onClick={() => setShowForm(false)}
               >
                 Batal

@@ -49,41 +49,41 @@ export default function TrackDetailPage() {
 
   if (!data) {
     return (
-      <section className="min-h-[70vh] flex items-center justify-center text-gray-300">
+      <section className="min-h-[70vh] flex items-center justify-center text-gray-600">
         <p className="text-lg italic">Data tidak ditemukan...</p>
       </section>
     );
   }
 
   return (
-    <section className="relative text-white py-32 px-6">
+    <section className="relative bg-white text-gray-900 py-32 px-6 overflow-hidden">
 
-      {/* Soft violet orb continuity */}
+      {/* Blue orb decorative */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 0.06, scale: 1 }}
+        animate={{ opacity: 0.08, scale: 1 }}
         transition={{ duration: 1.8 }}
         className="absolute right-[-200px] top-[100px] w-[460px] h-[460px] 
-        bg-fuchsia-500 blur-[190px] rounded-full pointer-events-none"
+        bg-blue-500 blur-[200px] rounded-full pointer-events-none"
       />
 
       <div className="max-w-4xl mx-auto relative z-10">
 
-        {/* BREADCRUMB */}
+        {/* Breadcrumb */}
         <motion.div
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-gray-400"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-gray-600"
         >
-          <Link href="/track" className="hover:text-violet-400 transition">
+          <Link href="/track" className="hover:text-blue-600 transition">
             Track Harian
           </Link>
           <span>/</span>
-          <span className="text-gray-300 font-medium">Detail</span>
+          <span className="text-gray-900 font-medium">Detail</span>
         </motion.div>
 
-        {/* HEADER */}
+        {/* Header */}
         <motion.h1
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -93,27 +93,29 @@ export default function TrackDetailPage() {
           Detail Kegiatan Magang Hari ke-{data.day}
         </motion.h1>
 
-        <p className="text-gray-400 mt-2">Tanggal: {data.date}</p>
+        <p className="text-gray-600 mt-2 font-medium">
+          Tanggal: <span className="text-gray-800">{data.date}</span>
+        </p>
 
-        {/* CARD */}
+        {/* Detail Card */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85 }}
-          className="mt-10 p-8 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-xl space-y-10"
+          className="mt-10 p-8 rounded-2xl bg-white border border-blue-100 shadow-lg space-y-10"
         >
           <DetailItem title="Uraian Aktivitas" data={data.activity} />
           <DetailItem title="Pelajaran Hari Ini" data={data.lesson} />
           <DetailItem title="Kendala" data={data.issue} />
 
-          {/* DOKUMENTASI */}
+          {/* Dokumentasi */}
           <div>
-            <h3 className="text-lg font-semibold text-violet-400 mb-4">
+            <h3 className="text-lg font-semibold text-blue-700 mb-4">
               Dokumentasi
             </h3>
 
             {data.documentation.length === 0 ? (
-              <p className="text-gray-400 italic">
+              <p className="text-gray-600 italic">
                 Tidak ada dokumentasi untuk hari ini.
               </p>
             ) : (
@@ -124,9 +126,9 @@ export default function TrackDetailPage() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className="overflow-hidden rounded-xl border border-white/10 
-                    hover:border-violet-400 hover:shadow-violet-500/20
-                    transition-all duration-300 shadow-md"
+                    className="overflow-hidden rounded-xl border border-blue-200 
+                    hover:border-blue-500 hover:shadow-blue-300/50
+                    transition-all duration-300 shadow-md bg-white"
                   >
                     <img
                       src={img}
@@ -140,7 +142,7 @@ export default function TrackDetailPage() {
           </div>
         </motion.div>
 
-        {/* BACK BUTTON */}
+        {/* Button Back */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -150,8 +152,8 @@ export default function TrackDetailPage() {
           <Link
             href="/track"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-gradient-to-r from-violet-600 to-fuchsia-500
-            hover:scale-[1.05] transition shadow-lg font-medium text-white"
+            bg-gradient-to-r from-blue-600 to-sky-500 text-white font-medium
+            hover:scale-[1.05] transition shadow-lg"
           >
             <ArrowLeft size={18} />
             Kembali Ke Riwayat
@@ -163,12 +165,11 @@ export default function TrackDetailPage() {
   );
 }
 
-/* Subcomponent untuk lebih clean */
 function DetailItem({ title, data }) {
   return (
     <div>
-      <h3 className="text-lg font-semibold text-violet-400">{title}</h3>
-      <p className="mt-2 text-gray-300 leading-relaxed">{data}</p>
+      <h3 className="text-lg font-semibold text-blue-700">{title}</h3>
+      <p className="mt-2 text-gray-800 leading-relaxed">{data}</p>
     </div>
   );
 }

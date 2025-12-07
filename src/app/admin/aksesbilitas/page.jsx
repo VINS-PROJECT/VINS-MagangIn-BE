@@ -1,20 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  Type,
-  Contrast,
-  TextCursorInput,
-  Accessibility,
-  Check,
-  Save,
-} from "lucide-react";
+import { Type, Contrast, TextCursorInput, Accessibility, Pencil } from "lucide-react";
+import Link from "next/link";
 
-export default function AksebilitasPage() {
+export default function AksesibilitasView() {
   const [textSize, setTextSize] = useState("normal");
   const [highContrast, setHighContrast] = useState(false);
   const [dyslexicFont, setDyslexicFont] = useState(false);
   const [spacing, setSpacing] = useState(false);
-  const [toast, setToast] = useState("");
 
   useEffect(() => {
     setTextSize(localStorage.getItem("textSize") || "normal");
@@ -23,155 +16,86 @@ export default function AksebilitasPage() {
     setSpacing(localStorage.getItem("spacing") === "true");
   }, []);
 
-  useEffect(() => {
-    applySettings();
-  }, [textSize, highContrast, dyslexicFont, spacing]);
-
-  const applySettings = () => {
-    document.documentElement.style.fontSize =
-      textSize === "normal" ? "16px" : textSize === "medium" ? "18px" : "20px";
-
-    document.body.classList.toggle("high-contrast", highContrast);
-    document.body.classList.toggle("dyslexic-font", dyslexicFont);
-    document.body.classList.toggle("extra-spacing", spacing);
-  };
-
-  const saveSettings = () => {
-    localStorage.setItem("textSize", textSize);
-    localStorage.setItem("highContrast", highContrast);
-    localStorage.setItem("dyslexicFont", dyslexicFont);
-    localStorage.setItem("spacing", spacing);
-
-    showToast("Pengaturan berhasil disimpan!");
-  };
-
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(""), 2000);
-  };
-
   return (
-    <div className="space-y-10 relative">
+    <div className="space-y-10 text-gray-900">
 
-      {/* Toast */}
-      {toast && (
-        <div className="
-          fixed top-24 right-8 
-          bg-violet-600/90 backdrop-blur-lg text-white
-          px-6 py-3 rounded-xl shadow-lg
-          animate-fade-in-up z-50 flex items-center gap-2
-        ">
-          <Check size={18} /> {toast}
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-extrabold text-blue-600">
+            Aksesibilitas (View)
+          </h2>
+          <p className="text-gray-600 text-sm mt-1">
+            Lihat pengaturan aksesibilitas yang sedang aktif.
+          </p>
         </div>
-      )}
 
-      {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 text-transparent bg-clip-text">
-          Pengaturan Aksesibilitas
-        </h2>
-        <p className="text-gray-400 text-sm mt-1">
-          Tingkatkan kenyamanan membaca sesuai kebutuhanmu.
-        </p>
+        <Link
+          href="/admin/aksesbilitas"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl
+          bg-blue-600 text-white shadow-lg font-semibold
+          hover:bg-blue-700 transition"
+        >
+          <Pencil className="w-5 h-5" />
+          Edit Pengaturan
+        </Link>
       </div>
 
-      <div className="
-        bg-white/5 border border-white/10 rounded-2xl backdrop-blur-xl
-        p-8 shadow-xl space-y-8
-      ">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 space-y-8">
 
-        {/* Font Size */}
-        <div>
-          <label className="text-gray-200 text-lg font-semibold flex items-center gap-2">
-            <Type className="w-5 h-5 text-violet-400" />
-            Ukuran Teks
-          </label>
+        {/* TEXT SIZE */}
+        <ViewItem
+          label="Ukuran Teks"
+          value={
+            textSize === "normal"
+              ? "Normal"
+              : textSize === "medium"
+              ? "Sedang"
+              : "Besar"
+          }
+          icon={<Type className="w-5 h-5 text-blue-600" />}
+        />
 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            {["normal", "medium", "large"].map((size) => (
-              <button
-                key={size}
-                onClick={() => setTextSize(size)}
-                className={`
-                  px-4 py-3 rounded-xl border text-sm capitalize transition
-                  ${textSize === size
-                    ? "bg-violet-600 text-white border-violet-500 shadow-md scale-[1.03]"
-                    : "bg-white/10 border-white/10 text-gray-200 hover:bg-white/20"
-                  }
-                `}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* High Contrast */}
-        <ToggleItem
+        {/* HIGH CONTRAST */}
+        <ViewItem
           label="Mode Kontras Tinggi"
-          active={highContrast}
-          setActive={setHighContrast}
-          icon={<Contrast className="w-5 h-5 text-yellow-400" />}
-          activeColor="yellow"
+          value={highContrast ? "Aktif" : "Nonaktif"}
+          icon={<Contrast className="w-5 h-5 text-yellow-500" />}
         />
 
-        {/* Dyslexic Font */}
-        <ToggleItem
+        {/* DYSLEXIC FONT */}
+        <ViewItem
           label="Font Ramah Disleksia"
-          active={dyslexicFont}
-          setActive={setDyslexicFont}
-          icon={<TextCursorInput className="w-5 h-5 text-blue-400" />}
-          activeColor="blue"
+          value={dyslexicFont ? "Aktif" : "Nonaktif"}
+          icon={<TextCursorInput className="w-5 h-5 text-blue-600" />}
         />
 
-        {/* Extra Spacing */}
-        <ToggleItem
-          label="Mode Spasi Lebih Lebar"
-          active={spacing}
-          setActive={setSpacing}
-          icon={<Accessibility className="w-5 h-5 text-green-400" />}
-          activeColor="green"
+        {/* SPACING */}
+        <ViewItem
+          label="Spasi Lebih Lebar"
+          value={spacing ? "Aktif" : "Nonaktif"}
+          icon={<Accessibility className="w-5 h-5 text-green-600" />}
         />
-
-        {/* Save */}
-        <div className="flex justify-end pt-4">
-          <button
-            onClick={saveSettings}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-gradient-to-r from-violet-600 to-fuchsia-500
-            text-white font-semibold shadow-lg
-            hover:scale-[1.03] transition"
-          >
-            <Save className="w-5 h-5" />
-            Simpan Pengaturan
-          </button>
-        </div>
 
       </div>
     </div>
   );
 }
 
-/* Reusable Toggle Component */
-function ToggleItem({ label, active, setActive, icon, activeColor }) {
+function ViewItem({ label, value, icon }) {
   return (
-    <div>
-      <label className="text-gray-200 text-lg font-semibold flex items-center gap-2">
+    <div className="flex justify-between border-b pb-4 last:border-none">
+      <div className="flex items-center gap-3 text-gray-800 font-medium">
         {icon}
         {label}
-      </label>
-
-      <button
-        onClick={() => setActive(!active)}
-        className={`mt-3 px-5 py-3 rounded-xl border transition flex items-center gap-3
-        ${
-          active
-            ? `bg-${activeColor}-600 text-white border-${activeColor}-500 shadow-md`
-            : "bg-white/10 text-gray-200 border-white/10 hover:bg-white/20"
-        }`}
-      >
-        {active ? "Aktif" : "Nonaktif"}
-      </button>
+      </div>
+      <span className={`font-semibold ${
+        value === "Aktif"
+          ? "text-blue-600"
+          : "text-gray-600"
+      }`}>
+        {value}
+      </span>
     </div>
   );
 }

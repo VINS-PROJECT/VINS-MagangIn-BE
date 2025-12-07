@@ -81,7 +81,6 @@ function getMonthMatrix(year, month) {
     }
     matrix.push(row);
   }
-
   return matrix;
 }
 
@@ -131,19 +130,19 @@ export default function KalenderPage() {
   };
 
   return (
-    <section className="relative text-white py-32 px-6 overflow-hidden">
+    <section className="relative bg-white text-gray-900 py-32 px-6 overflow-hidden">
 
-      {/* Soft glowing orb */}
+      {/* Soft blue orb */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 0.06, scale: 1 }}
+        animate={{ opacity: 0.08, scale: 1 }}
         transition={{ duration: 2 }}
-        className="absolute left-[-200px] top-[120px] w-[420px] h-[420px] bg-violet-600 rounded-full blur-[190px] pointer-events-none"
+        className="absolute left-[-200px] top-[120px] w-[420px] h-[420px] bg-blue-500/70 rounded-full blur-[200px] pointer-events-none"
       />
 
       <div className="max-w-6xl mx-auto relative z-10">
 
-        {/* --- HEADER --- */}
+        {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
 
           <div>
@@ -152,51 +151,49 @@ export default function KalenderPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl md:text-4xl font-extrabold flex items-center gap-2"
             >
-              <CalendarDays className="w-8 h-8 text-violet-400" />
+              <CalendarDays className="w-8 h-8 text-blue-600" />
               Kalender{" "}
-              <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                Magang
+              <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+                MagangIn
               </span>
             </motion.h1>
-
             <LiveClock />
           </div>
 
-          {/* month selector */}
+          {/* Month selector */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 self-start md:self-auto"
+            className="flex items-center gap-3"
           >
-            <button onClick={goPrevMonth} className="p-2 rounded-xl border border-white/20 hover:bg-white/10 transition">
-              <ChevronLeft size={18} />
+            <button onClick={goPrevMonth}
+            className="p-2 rounded-xl border border-blue-200 hover:bg-blue-50 transition">
+              <ChevronLeft size={18} className="text-gray-700" />
             </button>
 
-            <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-medium">
+            <div className="px-4 py-2 rounded-xl bg-blue-50 text-sm font-semibold text-blue-700 border border-blue-200">
               {monthText}
             </div>
 
-            <button onClick={goNextMonth} className="p-2 rounded-xl border border-white/20 hover:bg-white/10 transition">
-              <ChevronRight size={18} />
+            <button onClick={goNextMonth}
+            className="p-2 rounded-xl border border-blue-200 hover:bg-blue-50 transition">
+              <ChevronRight size={18} className="text-gray-700" />
             </button>
           </motion.div>
         </div>
 
-        {/* --- MAIN AREA: CALENDAR + EVENT PANEL --- */}
+        {/* MAIN GRID */}
         <div className="grid lg:grid-cols-[2fr,1.3fr] gap-8">
-
-          {/* Calendar Grid */}
+          
+          {/* Calendar */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 p-4 md:p-6 shadow-xl"
+            className="rounded-2xl bg-white border border-blue-100 shadow-lg p-4 md:p-6"
           >
-            <div className="grid grid-cols-7 text-center text-xs md:text-sm text-gray-400 mb-3">
+            <div className="grid grid-cols-7 text-center text-xs md:text-sm text-gray-600 mb-3 font-medium">
               {weekDays.map((d) => (
-                <div key={d} className="py-1 uppercase tracking-wide">
-                  {d}
-                </div>
+                <div key={d} className="py-1 uppercase tracking-wide">{d}</div>
               ))}
             </div>
 
@@ -205,8 +202,7 @@ export default function KalenderPage() {
                 week.map((cell, ci) => {
                   const dateKey = formatDateKey(cell.date);
                   const hasEvents = !!eventsByDate[dateKey];
-                  const isToday =
-                    formatDateKey(today) === dateKey && cell.inCurrent;
+                  const isToday = formatDateKey(today) === dateKey && cell.inCurrent;
                   const isSelected = selectedDate === dateKey;
 
                   return (
@@ -214,26 +210,18 @@ export default function KalenderPage() {
                       key={`${wi}-${ci}`}
                       onClick={() => setSelectedDate(dateKey)}
                       className={`
-                        flex flex-col items-center justify-center text-xs md:text-sm
-                        rounded-xl px-1 py-2 md:px-2 md:py-3 transition
-                        ${cell.inCurrent ? "text-gray-100" : "text-gray-600/40"}
-                        ${isSelected ? "bg-gradient-to-br from-violet-600/90 to-fuchsia-500/80" : "hover:bg-white/10"}
+                        flex flex-col items-center justify-center rounded-lg px-1 py-2 md:px-2 md:py-3 text-sm transition
+                        ${cell.inCurrent ? "text-gray-900" : "text-gray-400"}
+                        ${isSelected ? "bg-blue-600 text-white" : "hover:bg-blue-50"}
+                        ${isToday && !isSelected ? "border border-blue-400" : ""}
                       `}
                     >
-                      <span
-                        className={`
-                          w-6 h-6 flex items-center justify-center rounded-md
-                          ${isToday ? "border border-violet-400/80" : ""}
-                        `}
-                      >
-                        {cell.date.getDate()}
-                      </span>
+                      {cell.date.getDate()}
 
                       {hasEvents && (
-                        <span className={`
-                          w-1.5 h-1.5 rounded-full mt-1
-                          ${isSelected ? "bg-white" : "bg-violet-400"}
-                        `}/>
+                        <span className={`w-1.5 h-1.5 rounded-full mt-1 ${
+                          isSelected ? "bg-white" : "bg-blue-500"
+                        }`} />
                       )}
                     </button>
                   );
@@ -242,26 +230,23 @@ export default function KalenderPage() {
             </div>
           </motion.div>
 
-          {/* EVENT SIDE PANEL */}
+          {/* EVENT PANEL */}
           <motion.div
             initial={{ opacity: 0, x: 12 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="rounded-2xl bg-white/5 backdrop-blur-lg border border-white/10 p-5 shadow-xl flex flex-col"
+            className="rounded-2xl bg-white border border-blue-100 shadow-lg p-5"
           >
-            <div className="flex items-center justify-between gap-2 mb-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Bookmark className="w-5 h-5 text-violet-400" />
-                Agenda Harian
-              </h2>
-            </div>
+            <h2 className="text-lg font-bold flex items-center gap-2 text-gray-900">
+              <Bookmark size={18} className="text-blue-600" />
+              Agenda Harian
+            </h2>
 
-            <p className="text-xs text-gray-300 mb-4">
-              {selectedDate || "Pilih tanggal pada kalender"}
+            <p className="text-xs text-gray-500 mt-1 mb-4">
+              {selectedDate || "Pilih tanggal"}
             </p>
 
             {selectedEvents.length === 0 ? (
-              <p className="text-gray-400 italic text-sm mt-6 text-center">
+              <p className="text-gray-500 italic text-sm mt-6 text-center">
                 Tidak ada agenda.
               </p>
             ) : (
@@ -272,17 +257,19 @@ export default function KalenderPage() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="p-4 rounded-xl bg-white/5 border border-white/10"
+                    className="p-4 rounded-xl bg-blue-50 border border-blue-200"
                   >
-                    <span className="text-[10px] px-2 py-1 rounded-full bg-violet-600/30 text-violet-200 font-medium">
+                    <span className="text-[11px] px-2 py-1 rounded-full bg-blue-500 text-white font-medium">
                       {ev.type}
                     </span>
-                    <div className="flex items-center gap-1 text-xs text-gray-300 mt-2">
-                      <Clock size={12} /> <span>{ev.time}</span>
+
+                    <div className="flex items-center gap-1 text-xs text-gray-700 mt-2">
+                      <Clock size={12} /> {ev.time}
                     </div>
-                    <h4 className="text-sm font-semibold mt-1 text-gray-100">{ev.title}</h4>
+
+                    <h4 className="text-sm font-semibold mt-1">{ev.title}</h4>
                     {ev.description && (
-                      <p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                      <p className="text-xs text-gray-600 mt-1 leading-relaxed">
                         {ev.description}
                       </p>
                     )}
@@ -291,8 +278,8 @@ export default function KalenderPage() {
               </div>
             )}
 
-            <p className="mt-6 text-[11px] text-gray-500 italic">
-              *Event masih sample data → bisa disinkronkan dengan Track & Logbook.
+            <p className="mt-6 text-[11px] text-gray-400 italic">
+              *Sample data — Bisa otomatis sinkron dengan Track & Logbook
             </p>
           </motion.div>
         </div>
@@ -301,7 +288,7 @@ export default function KalenderPage() {
   );
 }
 
-/* 🎯 LIVE CLOCK COMPONENT */
+/* Live clock */
 function LiveClock() {
   const [now, setNow] = useState(new Date());
 
@@ -310,14 +297,14 @@ function LiveClock() {
     return () => clearInterval(timer);
   }, []);
 
-  const dateString = now.toLocaleDateString("id-ID", {
+  const dateStr = now.toLocaleDateString("id-ID", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
-  const timeString = now.toLocaleTimeString("id-ID", {
+  const timeStr = now.toLocaleTimeString("id-ID", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -327,9 +314,9 @@ function LiveClock() {
     <motion.p
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-xs md:text-sm text-violet-300 mt-1"
+      className="text-xs md:text-sm text-blue-600 mt-1"
     >
-      ⏱ {dateString} • {timeString}
+      ⏱ {dateStr} • {timeStr}
     </motion.p>
   );
 }

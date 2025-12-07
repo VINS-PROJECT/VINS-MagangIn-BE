@@ -24,6 +24,7 @@ export default function LogbookPage() {
   const [selectedWeek, setSelectedWeek] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
   const itemsPerPage = 5;
   const totalWeeks = Math.ceil(logbookData.length / 7);
 
@@ -42,18 +43,21 @@ export default function LogbookPage() {
   }, [filteredByWeek, search]);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   return (
-    <section className="relative text-white py-32 px-6 overflow-hidden">
+    <section className="relative bg-white text-gray-900 py-32 px-6 overflow-hidden">
 
-      {/* Soft glowing continuity */}
+      {/* Soft blue glowing orb */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 0.06, scale: 1 }}
+        animate={{ opacity: 0.08, scale: 1 }}
         transition={{ duration: 2 }}
-        className="absolute top-20 right-[-160px] w-[390px] h-[390px] rounded-full
-        bg-fuchsia-500 blur-[170px] pointer-events-none"
+        className="absolute top-24 right-[-160px] w-[380px] h-[380px] rounded-full
+        bg-blue-500 blur-[170px] pointer-events-none"
       />
 
       <div className="max-w-5xl mx-auto relative z-10">
@@ -65,12 +69,12 @@ export default function LogbookPage() {
           className="text-4xl font-extrabold text-center"
         >
           Logbook{" "}
-          <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
             MagangIn
           </span>
         </motion.h1>
 
-        <p className="text-gray-400 text-center mt-3 mb-12">
+        <p className="text-gray-600 text-center mt-3 mb-12">
           Koleksi PDF logbook harian dalam perjalanan magangmu 📚
         </p>
 
@@ -80,13 +84,15 @@ export default function LogbookPage() {
             value={search}
             placeholder="Cari tanggal atau Day ke..."
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white placeholder-gray-400 focus:ring-2 focus:ring-violet-600 outline-none"
+            className="px-4 py-3 rounded-xl bg-white border border-blue-200 
+            text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-600 outline-none shadow-sm"
           />
 
           <select
             value={selectedWeek}
             onChange={(e) => { setSelectedWeek(e.target.value); setPage(1); }}
-            className="px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white focus:ring-2 focus:ring-fuchsia-500 outline-none"
+            className="px-4 py-3 rounded-xl bg-white border border-blue-200 
+            text-gray-800 focus:ring-2 focus:ring-blue-600 outline-none shadow-sm"
           >
             <option value="">Semua Minggu</option>
             {Array.from({ length: totalWeeks }).map((_, i) => (
@@ -100,7 +106,7 @@ export default function LogbookPage() {
         {/* List */}
         <div className="space-y-6">
           {paginatedData.length === 0 ? (
-            <p className="text-center text-gray-400 italic">
+            <p className="text-center text-gray-500 italic">
               Tidak ada dokumen ditemukan...
             </p>
           ) : (
@@ -111,15 +117,14 @@ export default function LogbookPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
                 className="flex items-center justify-between
-                py-6 px-7 rounded-2xl backdrop-blur-lg
-                bg-white/5 border border-white/10 shadow-lg
-                hover:bg-white/10 transition"
+                py-6 px-7 rounded-2xl bg-white border border-blue-100 shadow-md
+                hover:shadow-xl hover:scale-[1.02] transition"
               >
                 <div>
-                  <p className="font-semibold text-violet-300 text-lg">
+                  <p className="font-semibold text-blue-700 text-lg">
                     Hari ke-{item.day}
                   </p>
-                  <p className="text-gray-400 text-sm">{item.date}</p>
+                  <p className="text-gray-600 text-sm">{item.date}</p>
                 </div>
 
                 <div className="flex gap-3">
@@ -127,8 +132,8 @@ export default function LogbookPage() {
                     href={item.pdfUrl}
                     target="_blank"
                     className="flex items-center gap-2 px-4 py-2 rounded-lg 
-                    bg-gradient-to-r from-violet-600 to-fuchsia-500
-                    text-white hover:scale-105 transition"
+                    bg-gradient-to-r from-blue-600 to-sky-500
+                    text-white hover:scale-105 transition font-medium"
                   >
                     <FileText size={16} /> Lihat
                   </a>
@@ -136,8 +141,8 @@ export default function LogbookPage() {
                     href={item.pdfUrl}
                     download
                     className="flex items-center gap-2 px-4 py-2 rounded-lg 
-                    border border-violet-400 text-violet-300
-                    hover:bg-violet-500/20 transition"
+                    border border-blue-400 text-blue-600
+                    hover:bg-blue-50 transition font-medium"
                   >
                     <Download size={16} /> Download
                   </a>
@@ -149,23 +154,25 @@ export default function LogbookPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-5 mt-10">
+          <div className="flex items-center justify-center gap-5 mt-10 text-gray-800">
             <button
               disabled={page === 1}
               onClick={() => setPage(p => p - 1)}
-              className={`px-4 py-2 rounded-lg border border-white/20
-              ${page === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-white/10"}`}
+              className={`px-4 py-2 rounded-lg border border-blue-200
+              ${page === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"}
+              transition`}
             >
               Prev
             </button>
 
-            <span className="text-gray-300">Halaman {page} / {totalPages}</span>
+            <span>Halaman {page} / {totalPages}</span>
 
             <button
               disabled={page === totalPages}
               onClick={() => setPage(p => p + 1)}
-              className={`px-4 py-2 rounded-lg border border-white/20
-              ${page === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-white/10"}`}
+              className={`px-4 py-2 rounded-lg border border-blue-200
+              ${page === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"}
+              transition`}
             >
               Next
             </button>

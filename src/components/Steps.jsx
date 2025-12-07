@@ -21,22 +21,22 @@ export default function Steps() {
   ];
 
   return (
-    <section className="relative overflow-hidden text-white py-32 md:py-44">
+    <section className="relative overflow-hidden bg-white text-gray-900 py-32 md:py-44">
 
-      {/* Orbs — sangat halus & lebih turun */}
+      {/* Blue Glow Orbs */}
       <motion.div
         initial={{ opacity: 0, y: 70 }}
-        whileInView={{ opacity: 0.05, y: 0 }}
+        whileInView={{ opacity: 0.08, y: 0 }}
         transition={{ duration: 1.8 }}
         viewport={{ once: true }}
-        className="absolute right-[-140px] top-[140px] w-[380px] h-[380px] bg-fuchsia-500 rounded-full blur-[180px] pointer-events-none"
+        className="absolute right-[-140px] top-[140px] w-[380px] h-[380px] bg-sky-400 rounded-full blur-[180px] pointer-events-none"
       />
       <motion.div
         initial={{ opacity: 0, y: 70 }}
-        whileInView={{ opacity: 0.05, y: 0 }}
+        whileInView={{ opacity: 0.08, y: 0 }}
         transition={{ duration: 2 }}
         viewport={{ once: true }}
-        className="absolute left-[-180px] bottom-[-120px] w-[360px] h-[360px] bg-violet-600 rounded-full blur-[180px] pointer-events-none"
+        className="absolute left-[-180px] bottom-[-120px] w-[360px] h-[360px] bg-blue-600 rounded-full blur-[190px] pointer-events-none"
       />
 
       {/* CONTENT */}
@@ -49,8 +49,8 @@ export default function Steps() {
           className="text-3xl md:text-4xl font-extrabold mb-6"
         >
           Langkah Menggunakan{" "}
-          <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-            Magang VINS
+          <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+            MagangIn
           </span>
         </motion.h2>
 
@@ -59,7 +59,7 @@ export default function Steps() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-gray-300 max-w-2xl mx-auto mb-16 leading-relaxed"
+          className="text-gray-600 max-w-2xl mx-auto mb-16 leading-relaxed text-lg"
         >
           Tiga tahap mudah untuk memulai perjalanan magang secara terstruktur dan profesional.
         </motion.p>
@@ -73,24 +73,23 @@ export default function Steps() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="relative group p-8 rounded-2xl bg-white/5 backdrop-blur-md
-              border border-white/10 hover:bg-white/10 hover:scale-[1.03]
-              transition-all duration-300 shadow-lg"
+              className="relative group p-8 rounded-2xl bg-white border border-blue-100 
+              hover:shadow-xl hover:scale-[1.03] transition-all duration-300 shadow-sm"
             >
               {/* Number badge */}
               <div className="absolute -top-6 left-6 w-12 h-12 rounded-full
               flex items-center justify-center
-              bg-gradient-to-r from-violet-600 to-fuchsia-500
-              text-white font-bold text-xl shadow-md
+              bg-gradient-to-r from-blue-600 to-sky-500 text-white 
+              font-bold text-xl shadow-md
               group-hover:scale-110 transition-transform duration-300">
                 {s.num}
               </div>
 
-              <h3 className="mt-8 text-lg md:text-xl font-semibold text-white">
+              <h3 className="mt-8 text-lg md:text-xl font-semibold text-gray-900">
                 {s.title}
               </h3>
 
-              <p className="mt-3 text-gray-300 leading-relaxed">
+              <p className="mt-3 text-gray-700 leading-relaxed">
                 {s.desc}
               </p>
             </motion.div>

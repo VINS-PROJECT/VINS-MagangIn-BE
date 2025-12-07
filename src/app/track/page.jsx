@@ -33,14 +33,14 @@ export default function TrackHistory() {
   );
 
   return (
-    <section className="relative text-white py-32 px-6 overflow-hidden">
+    <section className="relative bg-white text-gray-900 py-32 px-6 overflow-hidden">
 
-      {/* Decorative faint orb */}
+      {/* Blue Orb */}
       <motion.div
         initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 0.06, scale: 1 }}
+        animate={{ opacity: 0.08, scale: 1 }}
         transition={{ duration: 2 }}
-        className="absolute left-[-180px] top-20 w-[400px] h-[400px] bg-fuchsia-500 blur-[200px] rounded-full pointer-events-none"
+        className="absolute left-[-180px] top-20 w-[400px] h-[400px] bg-sky-400 blur-[200px] rounded-full pointer-events-none"
       />
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -53,7 +53,7 @@ export default function TrackHistory() {
           className="text-4xl font-extrabold text-center"
         >
           Riwayat{" "}
-          <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
             Track Harian
           </span>
         </motion.h1>
@@ -62,7 +62,7 @@ export default function TrackHistory() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85 }}
-          className="text-gray-400 text-center mt-3 mb-12"
+          className="text-gray-600 text-center mt-3 mb-12"
         >
           Kelola dan lihat seluruh catatan aktivitas magangmu dengan mudah.
         </motion.p>
@@ -74,13 +74,13 @@ export default function TrackHistory() {
             placeholder="Cari aktivitas atau pelajaran..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-violet-600 outline-none"
+            className="w-full px-4 py-3 bg-white border border-blue-200 rounded-xl text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
           />
 
           <select
             value={filterDay}
             onChange={(e) => setFilterDay(e.target.value)}
-            className="w-full md:w-48 px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-fuchsia-500 outline-none"
+            className="w-full md:w-48 px-4 py-3 bg-white border border-blue-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
           >
             <option value="">Filter Day</option>
             {[...new Set(logs.map((log) => log.day))].map((day) => (
@@ -92,15 +92,15 @@ export default function TrackHistory() {
         </div>
 
         {/* TABLE */}
-        <div className="overflow-x-auto bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl">
-          <table className="w-full text-sm text-gray-200">
-            <thead className="bg-white/10 text-gray-300">
+        <div className="overflow-x-auto bg-white border border-blue-100 rounded-2xl shadow-lg">
+          <table className="w-full text-sm text-gray-700">
+            <thead className="bg-blue-50 text-blue-900 font-semibold">
               <tr>
-                <th className="px-6 py-4 font-semibold">Tanggal</th>
-                <th className="px-6 py-4 font-semibold">Day</th>
-                <th className="px-6 py-4 font-semibold">Aktivitas</th>
-                <th className="px-6 py-4 font-semibold">Pelajaran</th>
-                <th className="px-6 py-4 font-semibold text-center">Aksi</th>
+                <th className="px-6 py-4">Tanggal</th>
+                <th className="px-6 py-4">Day</th>
+                <th className="px-6 py-4">Aktivitas</th>
+                <th className="px-6 py-4">Pelajaran</th>
+                <th className="px-6 py-4 text-center">Aksi</th>
               </tr>
             </thead>
 
@@ -112,7 +112,7 @@ export default function TrackHistory() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className="border-b border-white/10 hover:bg-white/10 transition cursor-pointer"
+                    className="border-b border-blue-100 hover:bg-blue-50 transition"
                   >
                     <td className="px-6 py-4">{log.date}</td>
                     <td className="px-6 py-4">Hari ke-{log.day}</td>
@@ -121,7 +121,7 @@ export default function TrackHistory() {
                     <td className="px-6 py-4 text-center">
                       <a
                         href={`/track/detail/${index}`}
-                        className="px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white rounded-lg hover:scale-105 transition"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-lg hover:scale-105 transition"
                       >
                         Lihat
                       </a>
@@ -130,7 +130,7 @@ export default function TrackHistory() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center py-6 text-gray-400 italic">
+                  <td colSpan="5" className="text-center py-6 text-gray-500 italic">
                     Tidak ada data ditemukan.
                   </td>
                 </tr>
@@ -141,12 +141,12 @@ export default function TrackHistory() {
 
         {/* PAGINATION */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-10 text-gray-300">
+          <div className="flex justify-center items-center gap-4 mt-10 text-gray-800">
             <button
               disabled={page === 1}
               onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-lg border border-white/20 ${
-                page === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-white/10"
+              className={`px-4 py-2 rounded-lg border border-blue-200 ${
+                page === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"
               } transition`}
             >
               Prev
@@ -157,15 +157,14 @@ export default function TrackHistory() {
             <button
               disabled={page === totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-lg border border-white/20 ${
-                page === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-white/10"
+              className={`px-4 py-2 rounded-lg border border-blue-200 ${
+                page === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"
               } transition`}
             >
               Next
             </button>
           </div>
         )}
-
       </div>
     </section>
   );
