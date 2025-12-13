@@ -55,7 +55,7 @@ export default function Navbar() {
             "
           >
             <Image
-              src="/logo.svg"       // 🔁 ganti ke logo external kapan saja
+              src="/VINS2.svg"       // 🔁 ganti ke logo external kapan saja
               alt="VINS Gawe"
               width={28}
               height={28}

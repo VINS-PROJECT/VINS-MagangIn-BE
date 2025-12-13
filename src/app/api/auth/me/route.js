@@ -1,7 +1,6 @@
-// src/app/api/auth/me/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import auth from "@/lib/auth";
+import { requireAuth } from "@/lib/apiAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +8,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    const user = await auth.getUserFromRequest();
+    const user = await requireAuth();
     if (!user) {
       return NextResponse.json(
         { message: "Unauthorized" },
@@ -19,7 +18,7 @@ export async function GET() {
 
     return NextResponse.json({ user });
   } catch (err) {
-    console.error(err);
+    console.error("AUTH ME ERROR:", err);
     return NextResponse.json(
       { message: "Error server" },
       { status: 500 }

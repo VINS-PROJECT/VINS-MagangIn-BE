@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CalendarDays,
   Eye,
   Pencil,
   Trash2,
   Save,
   X,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -59,62 +59,91 @@ export default function TrackAdminPage() {
   return (
     <div className="space-y-10">
 
-      {/* Header */}
+      {/* ================= HEADER ================= */}
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-          Data Track Harian
+        <h2
+          className="text-3xl font-extrabold
+          bg-gradient-to-r from-blue-600 to-sky-500
+          bg-clip-text text-transparent"
+        >
+          Track Harian
         </h2>
+
         <Link
           href="/admin/track/tambah"
-          className="px-5 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white font-semibold shadow-md transition"
+          className="flex items-center gap-2 px-5 py-3
+          bg-gradient-to-r from-blue-600 to-sky-500
+          hover:brightness-110
+          rounded-xl text-white font-semibold
+          shadow-md transition"
         >
-          + Tambah Track
+          <Plus size={18} /> Tambah Track
         </Link>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-md">
+      {/* ================= TABLE ================= */}
+      <div
+        className="rounded-2xl overflow-hidden
+        bg-white/70 backdrop-blur-xl
+        border border-white/40
+        shadow-[0_20px_40px_rgba(0,0,0,0.08)]"
+      >
         {loading ? (
-          <p className="p-6 text-gray-500 text-center">Memuat...</p>
+          <div className="p-10 text-center text-slate-500">
+            Memuat data track...
+          </div>
+        ) : data.length === 0 ? (
+          <div className="p-10 text-center text-slate-500">
+            Belum ada track harian.
+          </div>
         ) : (
-          <table className="w-full text-sm text-gray-800">
-            <thead className="bg-blue-50 text-gray-700 font-semibold">
-              <tr>
-                <th className="py-3 px-4">Day</th>
-                <th className="py-3 px-4">Tanggal</th>
-                <th className="py-3 px-4">Aktivitas</th>
-                <th className="py-3 px-4">Aksi</th>
+          <table className="w-full text-sm text-slate-800">
+            <thead className="sticky top-0 bg-white/80 backdrop-blur border-b border-slate-200">
+              <tr className="text-slate-600">
+                <th className="py-4 px-4 text-left">Hari</th>
+                <th className="py-4 px-4 text-left">Tanggal</th>
+                <th className="py-4 px-4 text-left">Aktivitas</th>
+                <th className="py-4 px-4 text-left w-32">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {data.map((item) => (
                 <tr
                   key={item._id}
-                  className="border-t border-blue-100 hover:bg-blue-50 transition"
+                  className="border-t border-slate-200/60
+                  hover:bg-blue-50/60 transition"
                 >
-                  <td className="py-3 px-4 text-blue-700 font-semibold">
+                  <td className="py-3 px-4 font-semibold text-blue-700">
                     Hari ke-{item.hari}
                   </td>
-                  <td className="py-3 px-4">{item.tanggal}</td>
-                  <td className="py-3 px-4 max-w-xs truncate">
+                  <td className="py-3 px-4">
+                    {item.tanggal}
+                  </td>
+                  <td className="py-3 px-4 max-w-sm truncate">
                     {item.aktivitas}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-3">
                       <button
-                        className="hover:text-blue-600"
-                        onClick={() => { setSelected(item); setIsEdit(false); }}
+                        className="text-slate-500 hover:text-blue-600 transition"
+                        onClick={() => {
+                          setSelected(item);
+                          setIsEdit(false);
+                        }}
                       >
                         <Eye size={18} />
                       </button>
                       <button
-                        className="hover:text-sky-600"
-                        onClick={() => { setSelected({ ...item }); setIsEdit(true); }}
+                        className="text-slate-500 hover:text-sky-600 transition"
+                        onClick={() => {
+                          setSelected({ ...item });
+                          setIsEdit(true);
+                        }}
                       >
                         <Pencil size={18} />
                       </button>
                       <button
-                        className="hover:text-red-600"
+                        className="text-slate-500 hover:text-red-600 transition"
                         onClick={() => deleteTrack(item._id)}
                       >
                         <Trash2 size={18} />
@@ -123,64 +152,84 @@ export default function TrackAdminPage() {
                   </td>
                 </tr>
               ))}
-
             </tbody>
           </table>
         )}
       </div>
 
-      {/* Modal */}
+      {/* ================= MODAL ================= */}
       <AnimatePresence>
         {selected && (
           <motion.div
-            className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center
+            bg-black/40 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-white p-6 rounded-2xl w-[520px] border border-blue-200 shadow-xl space-y-4"
+              className="w-[520px] p-6 rounded-2xl
+              bg-white/80 backdrop-blur-xl
+              border border-white/40
+              shadow-[0_20px_40px_rgba(0,0,0,0.2)]
+              space-y-4"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
             >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-blue-700 text-lg">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold text-blue-700">
                   {isEdit ? "Edit Track" : "Detail Track"}
                 </h3>
-                <button onClick={() => setSelected(null)}>
+                <button
+                  onClick={() => setSelected(null)}
+                  className="text-slate-500 hover:text-slate-800"
+                >
                   <X />
                 </button>
               </div>
 
               {["aktivitas", "pelajaran", "kendala"].map((field) => (
                 <div key={field}>
-                  <p className="text-gray-600 text-sm capitalize">{field}</p>
+                  <p className="text-xs text-slate-500 capitalize mb-1">
+                    {field}
+                  </p>
                   {isEdit ? (
                     <textarea
                       rows={2}
                       value={selected[field]}
                       onChange={(e) =>
-                        setSelected({ ...selected, [field]: e.target.value })
+                        setSelected({
+                          ...selected,
+                          [field]: e.target.value,
+                        })
                       }
-                      className="w-full p-2 border border-blue-200 rounded-lg"
+                      className="w-full rounded-xl p-2
+                      bg-white border border-slate-300
+                      focus:ring-2 focus:ring-blue-500/20 outline-none"
                     />
                   ) : (
-                    <p>{selected[field]}</p>
+                    <p className="text-slate-800">
+                      {selected[field] || "-"}
+                    </p>
                   )}
                 </div>
               ))}
 
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 pt-2">
                 {isEdit ? (
                   <button
                     onClick={saveEdit}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg flex gap-2"
+                    className="flex items-center gap-2 px-4 py-2
+                    bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition"
                   >
                     <Save size={18} /> Simpan
                   </button>
                 ) : (
                   <button
                     onClick={() => setIsEdit(true)}
-                    className="px-4 py-2 border border-blue-300 text-blue-600 rounded-lg flex gap-2"
+                    className="flex items-center gap-2 px-4 py-2
+                    border border-blue-300 text-blue-600 rounded-xl hover:bg-blue-50 transition"
                   >
                     <Pencil size={18} /> Edit
                   </button>

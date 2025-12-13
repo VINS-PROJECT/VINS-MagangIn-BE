@@ -1,33 +1,47 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Track from "@/models/Track";
-import { getUserFromRequest } from "@/lib/auth";
+import { requireAdmin } from "@/lib/apiAuth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
 export const runtime = "nodejs";
 
-// GET → ambil semua data track
+/* ================= GET → ambil semua track ================= */
 export async function GET() {
   try {
     await connectDB();
-    const tracks = await Track.find().sort({ day: -1 });
 
+    const admin = await requireAdmin();
+    if (!admin) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const tracks = await Track.find().sort({ day: -1 });
     return NextResponse.json(tracks, { status: 200 });
   } catch (err) {
     console.error("GET /api/admin/track error:", err);
-    return NextResponse.json({ message: "Error server" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Error server" },
+      { status: 500 }
+    );
   }
 }
 
-// POST → tambah track baru + upload gambar
+/* ================= POST → tambah track + upload gambar ================= */
 export async function POST(req) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
-    if (!user) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const admin = await requireAdmin();
+    if (!admin) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const formData = await req.formData();
@@ -40,12 +54,15 @@ export async function POST(req) {
 
     if (!day || !tanggal || !aktivitas || !pelajaran) {
       return NextResponse.json(
-        { message: "Hari, tanggal, aktivitas dan pelajaran wajib diisi" },
+        {
+          message:
+            "Hari, tanggal, aktivitas, dan pelajaran wajib diisi",
+        },
         { status: 400 }
       );
     }
 
-    // Upload gambar
+    /* ===== UPLOAD GAMBAR ===== */
     const files = formData.getAll("images") || [];
     const dokumentasi = [];
 
@@ -54,9 +71,8 @@ export async function POST(req) {
 
     for (const file of files) {
       if (!file || typeof file === "string") continue;
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
 
+      const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
       const filePath = path.join(uploadDir, filename);
 
@@ -71,7 +87,7 @@ export async function POST(req) {
       pelajaran,
       kendala,
       dokumentasi,
-      user: user._id,
+      user: admin._id,
     });
 
     return NextResponse.json(
@@ -80,6 +96,9 @@ export async function POST(req) {
     );
   } catch (err) {
     console.error("POST /api/admin/track error:", err);
-    return NextResponse.json({ message: "Error server" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Error server" },
+      { status: 500 }
+    );
   }
 }

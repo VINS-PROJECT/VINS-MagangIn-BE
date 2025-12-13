@@ -1,7 +1,6 @@
-// src/app/api/calendar/[id]/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import { getUserFromRequest } from "@/lib/auth";
+import { requireAuth } from "@/lib/apiAuth";
 import Calendar from "@/models/Calendar";
 
 export const dynamic = "force-dynamic";
@@ -10,23 +9,26 @@ export const dynamic = "force-dynamic";
 export async function GET(_req, { params }) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
-    if (!user)
+
+    const user = await requireAuth();
+    if (!user) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
+    }
 
     const agenda = await Calendar.findOne({
       _id: params.id,
       user: user._id,
     });
 
-    if (!agenda)
+    if (!agenda) {
       return NextResponse.json(
         { message: "Not found" },
         { status: 404 }
       );
+    }
 
     return NextResponse.json({ data: agenda });
   } catch (err) {
@@ -42,12 +44,14 @@ export async function GET(_req, { params }) {
 export async function PUT(req, { params }) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
-    if (!user)
+
+    const user = await requireAuth();
+    if (!user) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
+    }
 
     const body = await req.json();
 
@@ -57,11 +61,12 @@ export async function PUT(req, { params }) {
       { new: true }
     );
 
-    if (!updated)
+    if (!updated) {
       return NextResponse.json(
         { message: "Not found" },
         { status: 404 }
       );
+    }
 
     return NextResponse.json({
       message: "Agenda diupdate",
@@ -80,23 +85,26 @@ export async function PUT(req, { params }) {
 export async function DELETE(_req, { params }) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
-    if (!user)
+
+    const user = await requireAuth();
+    if (!user) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
+    }
 
     const deleted = await Calendar.findOneAndDelete({
       _id: params.id,
       user: user._id,
     });
 
-    if (!deleted)
+    if (!deleted) {
       return NextResponse.json(
         { message: "Not found" },
         { status: 404 }
       );
+    }
 
     return NextResponse.json({
       message: "Agenda dihapus",

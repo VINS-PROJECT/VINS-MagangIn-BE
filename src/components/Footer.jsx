@@ -13,10 +13,8 @@ export default function Footer() {
   ];
 
   const socials = [
-    { icon: <Twitter size={18} />, url: "https://twitter.com" },
-    { icon: <Linkedin size={18} />, url: "https://linkedin.com" },
-    { icon: <Instagram size={18} />, url: "https://instagram.com" },
-    { icon: <Youtube size={18} />, url: "https://youtube.com" },
+    { icon: <Linkedin size={18} />, url: "https://www.linkedin.com/in/kevinsimorangkir/" },
+    { icon: <Instagram size={18} />, url: "https://instagram.com/vins.ch" },
   ];
 
   return (
@@ -55,7 +53,7 @@ export default function Footer() {
               "
             >
               <Image
-                src="/logo.svg"
+                src="/VINS2.svg"
                 alt="VINSGawe"
                 width={26}
                 height={26}
@@ -79,7 +77,7 @@ export default function Footer() {
 
           <p className="text-sm mt-4 text-gray-600">
             <span className="font-medium text-gray-800">Email:</span>{" "}
-            support@vins.id
+            vin.simorangkir81@gmail.com
           </p>
         </div>
 
@@ -142,7 +140,7 @@ export default function Footer() {
       {/* BOTTOM */}
       <div className="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-600 relative z-10">
         © {new Date().getFullYear()}{" "}
-        <span className="font-semibold text-gray-900">VINSGawe</span>.
+        <span className="font-semibold text-gray-900">VINSGawe</span> by <a href="https://kvn-code.asia/" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">VINS. </a>
         Seluruh hak cipta dilindungi.
       </div>
     </footer>

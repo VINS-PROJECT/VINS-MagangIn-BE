@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import { getUserFromRequest } from "@/lib/auth";
+import { requireAdmin } from "@/lib/apiAuth";
 import Calendar from "@/models/Calendar";
 
 export const dynamic = "force-dynamic";
@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
 
-    if (!user || user.role !== "admin") {
+    const admin = await requireAdmin();
+    if (!admin) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -33,9 +33,9 @@ export async function GET() {
 export async function POST(req) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
 
-    if (!user || user.role !== "admin") {
+    const admin = await requireAdmin();
+    if (!admin) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -52,7 +52,7 @@ export async function POST(req) {
     }
 
     const created = await Calendar.create({
-      user: user._id,
+      user: admin._id,
       title: body.title,
       date: body.date,
       time: body.time || "",

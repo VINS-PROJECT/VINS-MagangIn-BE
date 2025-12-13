@@ -1,7 +1,6 @@
-// src/app/api/accessibility/route.js
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import { getUserFromRequest } from "@/lib/auth";
+import connectDB from "@/lib/db";
+import { requireAuth } from "@/lib/apiAuth";
 import Accessibility from "@/models/Accessibility";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +9,14 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
-    if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+    const user = await requireAuth();
+    if (!user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
     const doc = await Accessibility.findOne({ user: user._id });
 
@@ -25,20 +30,28 @@ export async function GET() {
         },
     });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: "Error server" }, { status: 500 });
+    console.error("GET accessibility error:", err);
+    return NextResponse.json(
+      { message: "Error server" },
+      { status: 500 }
+    );
   }
 }
 
-// POST / PUT / PATCH sama2 lewat POST (simple)
+// POST / PUT / PATCH (disatukan)
 export async function POST(req) {
   try {
     await connectDB();
-    const user = await getUserFromRequest();
-    if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const body = await req.json();
-    const { textSize, highContrast, dyslexicFont, spacing } = body;
+    const user = await requireAuth();
+    if (!user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { textSize, highContrast, dyslexicFont, spacing } = await req.json();
 
     const updated = await Accessibility.findOneAndUpdate(
       { user: user._id },
@@ -46,9 +59,15 @@ export async function POST(req) {
       { new: true, upsert: true }
     );
 
-    return NextResponse.json({ message: "Disimpan", data: updated });
+    return NextResponse.json({
+      message: "Disimpan",
+      data: updated,
+    });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: "Error server" }, { status: 500 });
+    console.error("POST accessibility error:", err);
+    return NextResponse.json(
+      { message: "Error server" },
+      { status: 500 }
+    );
   }
 }

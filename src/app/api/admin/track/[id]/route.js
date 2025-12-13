@@ -1,7 +1,6 @@
-// src/app/api/admin/track/[id]/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import { getUserFromRequest } from "@/lib/auth";
+import { requireAdmin } from "@/lib/apiAuth";
 import Track from "@/models/Track";
 import fs from "fs/promises";
 import path from "path";
@@ -14,18 +13,15 @@ export async function GET(_req, { params }) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
-    if (!user) {
+    const admin = await requireAdmin();
+    if (!admin) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    const track = await Track.findOne({
-      _id: params.id,
-      user: user._id,
-    });
+    const track = await Track.findById(params.id);
 
     if (!track) {
       return NextResponse.json(
@@ -49,8 +45,8 @@ export async function PUT(req, { params }) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
-    if (!user) {
+    const admin = await requireAdmin();
+    if (!admin) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -59,8 +55,8 @@ export async function PUT(req, { params }) {
 
     const body = await req.json();
 
-    const updated = await Track.findOneAndUpdate(
-      { _id: params.id, user: user._id },
+    const updated = await Track.findByIdAndUpdate(
+      params.id,
       body,
       { new: true }
     );
@@ -90,18 +86,15 @@ export async function DELETE(_req, { params }) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
-    if (!user) {
+    const admin = await requireAdmin();
+    if (!admin) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    const track = await Track.findOne({
-      _id: params.id,
-      user: user._id,
-    });
+    const track = await Track.findById(params.id);
 
     if (!track) {
       return NextResponse.json(
@@ -120,9 +113,8 @@ export async function DELETE(_req, { params }) {
             fileUrl.replace("/", "")
           );
           await fs.unlink(filePath);
-        } catch (e) {
-          // file boleh nggak ada → skip
-          console.warn("File skip:", fileUrl);
+        } catch {
+          // file boleh tidak ada
         }
       }
     }

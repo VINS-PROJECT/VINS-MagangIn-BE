@@ -1,8 +1,7 @@
-// src/app/api/admin/track/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Track from "@/models/Track";
-import { getUserFromRequest } from "@/lib/auth";
+import { requireAdmin } from "@/lib/apiAuth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -13,6 +12,15 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     await connectDB();
+
+    const admin = await requireAdmin();
+    if (!admin) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const tracks = await Track.find().sort({ hari: -1 });
     return NextResponse.json({ data: tracks });
   } catch (err) {
@@ -29,8 +37,8 @@ export async function POST(req) {
   try {
     await connectDB();
 
-    const user = await getUserFromRequest();
-    if (!user) {
+    const admin = await requireAdmin();
+    if (!admin) {
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
@@ -52,7 +60,7 @@ export async function POST(req) {
       );
     }
 
-    /* Upload gambar */
+    /* ================= UPLOAD GAMBAR ================= */
     const files = formData.getAll("images") || [];
     const dokumentasi = [];
 
@@ -77,7 +85,7 @@ export async function POST(req) {
       pelajaran,
       kendala,
       dokumentasi,
-      user: user._id,
+      user: admin._id,
     });
 
     return NextResponse.json(

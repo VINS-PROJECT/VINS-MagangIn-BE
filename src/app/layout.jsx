@@ -4,7 +4,8 @@ import Footer from "@/components/Footer";
 import ClientLayoutWrapper from "@/components/ClientLayoutWrapper";
 
 export const metadata = {
-  title: "MagangHub — Membangun Talenta Muda Indonesia",
+  title: "VINS Gawe -  Manajemen Aktivitas VINS",
+  description: "Platform manajemen aktivitas untuk VINS yang memudahkan pelacakan, penjadwalan, dan pengelolaan kegiatan secara efisien.",
 };
 
 export default function RootLayout({ children }) {
