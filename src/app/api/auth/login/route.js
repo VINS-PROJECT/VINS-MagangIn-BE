@@ -1,35 +1,23 @@
-// src/app/api/auth/login/route.js
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
-import { signToken } from "@/lib/auth";
+import auth from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const DEFAULT_ADMIN_USERNAME = "admin";
-const DEFAULT_ADMIN_PASSWORD = "Mark90r123 ";
-
-async function ensureAdminExists() {
-  await connectDB();
-  const existing = await User.findOne({ username: DEFAULT_ADMIN_USERNAME });
-  if (!existing) {
-    const hash = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 10);
-    await User.create({
-      username: DEFAULT_ADMIN_USERNAME,
-      passwordHash: hash,
-      role: "admin",
-    });
-    console.log("Admin default dibuat:", DEFAULT_ADMIN_USERNAME);
-  }
-}
-
 export async function POST(req) {
   try {
-    await ensureAdminExists();
-    const body = await req.json();
-    const { username, password } = body;
+    await connectDB();
 
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return NextResponse.json(
+        { message: "Body request tidak valid" },
+        { status: 400 }
+      );
+    }
+
+    const { username, password } = body;
     if (!username || !password) {
       return NextResponse.json(
         { message: "Username dan password wajib diisi" },
@@ -40,40 +28,44 @@ export async function POST(req) {
     const user = await User.findOne({ username });
     if (!user) {
       return NextResponse.json(
-        { message: "Username atau password salah" },
+        { message: "User tidak ditemukan" },
         { status: 401 }
       );
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       return NextResponse.json(
-        { message: "Username atau password salah" },
+        { message: "Password salah" },
         { status: 401 }
       );
     }
 
-    const token = signToken(user);
+    const token = auth.signToken(user);
 
     const res = NextResponse.json({
       message: "Login berhasil",
       user: {
         id: user._id,
         username: user.username,
+        role: user.role,
       },
     });
 
     res.cookies.set("token", token, {
       httpOnly: true,
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
-      maxAge: 7 * 24 * 60 * 60,
     });
 
     return res;
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: "Error server" }, { status: 500 });
+    console.error("LOGIN ERROR:", err);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

@@ -1,13 +1,14 @@
+// src/models/Track.js
 import mongoose from "mongoose";
 
-const TrackSchema = new mongoose.Schema(
-  {
-    day: { type: Number, required: true },
-    tanggal: { type: String, required: true },
-    judul: { type: String, required: true },
-    catatan: { type: String },
-  },
-  { timestamps: true }
-);
+const TrackSchema = new mongoose.Schema({
+  hari: Number,
+  tanggal: String,
+  aktivitas: String,
+  pelajaran: String,
+  kendala: String,
+  dokumentasi: [String],
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+}, { timestamps: true });
 
 export default mongoose.models.Track || mongoose.model("Track", TrackSchema);

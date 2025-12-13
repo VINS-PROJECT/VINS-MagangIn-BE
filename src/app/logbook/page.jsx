@@ -1,150 +1,168 @@
 "use client";
-import { useState, useMemo } from "react";
+
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { FileText, Download } from "lucide-react";
 
-const logbookData = [
-  { day: 1, date: "12-11-2025", pdfUrl: "/logbook/day1.pdf" },
-  { day: 2, date: "13-11-2025", pdfUrl: "/logbook/day2.pdf" },
-  { day: 3, date: "14-11-2025", pdfUrl: "/logbook/day3.pdf" },
-  { day: 4, date: "15-11-2025", pdfUrl: "/logbook/day4.pdf" },
-  { day: 5, date: "16-11-2025", pdfUrl: "/logbook/day5.pdf" },
-  { day: 6, date: "17-11-2025", pdfUrl: "/logbook/day6.pdf" },
-  { day: 7, date: "18-11-2025", pdfUrl: "/logbook/day7.pdf" },
-  { day: 8, date: "19-11-2025", pdfUrl: "/logbook/day8.pdf" },
-  { day: 9, date: "20-11-2025", pdfUrl: "/logbook/day9.pdf" },
-  { day: 10, date: "21-11-2025", pdfUrl: "/logbook/day10.pdf" },
-  { day: 11, date: "22-11-2025", pdfUrl: "/logbook/day11.pdf" },
-  { day: 12, date: "23-11-2025", pdfUrl: "/logbook/day12.pdf" },
-  { day: 13, date: "24-11-2025", pdfUrl: "/logbook/day13.pdf" },
-  { day: 14, date: "25-11-2025", pdfUrl: "/logbook/day14.pdf" },
-];
-
 export default function LogbookPage() {
-  const [selectedWeek, setSelectedWeek] = useState("");
+  const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   const itemsPerPage = 5;
-  const totalWeeks = Math.ceil(logbookData.length / 7);
 
-  const filteredByWeek = useMemo(() => {
-    if (!selectedWeek) return logbookData;
-    const weekNum = Number(selectedWeek);
-    const start = (weekNum - 1) * 7 + 1;
-    const end = weekNum * 7;
-    return logbookData.filter(l => l.day >= start && l.day <= end);
-  }, [selectedWeek]);
+  /* ================= LOAD LOGBOOK ================= */
+  useEffect(() => {
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/logbook", { cache: "no-store" });
+        const json = await res.json();
+        setData(json.data || []);
+      } catch (err) {
+        console.error("Gagal load logbook", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
-  const filteredData = useMemo(() => {
-    return filteredByWeek.filter(
-      l => l.date.includes(search) || String(l.day).includes(search)
+  /* ================= FILTER ================= */
+  const filtered = useMemo(() => {
+    return data.filter(
+      (l) =>
+        String(l.week).includes(search) ||
+        l.startDate?.includes(search) ||
+        l.endDate?.includes(search)
     );
-  }, [filteredByWeek, search]);
+  }, [data, search]);
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
+  const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+  const paginated = filtered.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage
   );
 
   return (
-    <section className="relative bg-white text-gray-900 py-32 px-6 overflow-hidden">
+    <section className="relative overflow-clip bg-white py-28 px-6">
 
-      {/* Soft blue glowing orb */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 0.08, scale: 1 }}
-        transition={{ duration: 2 }}
-        className="absolute top-24 right-[-160px] w-[380px] h-[380px] rounded-full
-        bg-blue-500 blur-[170px] pointer-events-none"
-      />
+      {/* Soft glow */}
+      <div className="absolute -right-40 top-40 w-[360px] h-[360px] bg-sky-300/40 blur-[160px] rounded-full pointer-events-none" />
 
       <div className="max-w-5xl mx-auto relative z-10">
 
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 25 }}
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-extrabold text-center"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-14"
         >
-          Logbook{" "}
-          <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-            MagangIn
-          </span>
-        </motion.h1>
+          <h1 className="text-4xl font-extrabold">
+            Logbook{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+              VINSGawe
+            </span>
+          </h1>
 
-        <p className="text-gray-600 text-center mt-3 mb-12">
-          Koleksi PDF logbook harian dalam perjalanan magangmu 📚
-        </p>
+          <p className="text-gray-600 mt-3">
+            Rekap logbook mingguan berdasarkan aktivitas yang telah dicatat
+          </p>
+        </motion.div>
 
-        {/* Filters */}
-        <div className="grid md:grid-cols-2 gap-4 mb-10 max-w-xl mx-auto">
+        {/* SEARCH */}
+        <div className="flex justify-center mb-10">
           <input
+            placeholder="Cari minggu atau tanggal..."
             value={search}
-            placeholder="Cari tanggal atau Day ke..."
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="px-4 py-3 rounded-xl bg-white border border-blue-200 
-            text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-600 outline-none shadow-sm"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="
+              w-full max-w-md px-4 py-3
+              rounded-xl
+              border border-blue-100
+              bg-white/80 backdrop-blur
+              focus:outline-none focus:ring-2 focus:ring-blue-500/20
+            "
           />
-
-          <select
-            value={selectedWeek}
-            onChange={(e) => { setSelectedWeek(e.target.value); setPage(1); }}
-            className="px-4 py-3 rounded-xl bg-white border border-blue-200 
-            text-gray-800 focus:ring-2 focus:ring-blue-600 outline-none shadow-sm"
-          >
-            <option value="">Semua Minggu</option>
-            {Array.from({ length: totalWeeks }).map((_, i) => (
-              <option key={i} value={i + 1}>
-                Minggu {i + 1} (Day {i * 7 + 1}-{(i + 1) * 7})
-              </option>
-            ))}
-          </select>
         </div>
 
-        {/* List */}
+        {/* LIST */}
         <div className="space-y-6">
-          {paginatedData.length === 0 ? (
-            <p className="text-center text-gray-500 italic">
-              Tidak ada dokumen ditemukan...
-            </p>
+          {loading ? (
+            <div className="text-center py-16 text-gray-500 animate-pulse">
+              Memuat logbook...
+            </div>
+          ) : paginated.length === 0 ? (
+            <div className="text-center py-16 text-gray-500 italic">
+              Logbook belum tersedia.
+            </div>
           ) : (
-            paginatedData.map((item, i) => (
+            paginated.map((item, i) => (
               <motion.div
-                key={item.day}
-                initial={{ opacity: 0, y: 25 }}
+                key={item._id}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
-                className="flex items-center justify-between
-                py-6 px-7 rounded-2xl bg-white border border-blue-100 shadow-md
-                hover:shadow-xl hover:scale-[1.02] transition"
+                className="
+                  flex flex-col md:flex-row
+                  justify-between items-start md:items-center
+                  gap-4
+                  p-6 rounded-2xl
+                  bg-white/80 backdrop-blur
+                  border border-blue-100/60
+                  shadow-sm
+                  hover:shadow-xl hover:shadow-blue-500/10
+                  transition-all
+                "
               >
+                {/* INFO */}
                 <div>
-                  <p className="font-semibold text-blue-700 text-lg">
-                    Hari ke-{item.day}
+                  <p className="font-bold text-blue-700 text-lg">
+                    Minggu ke-{item.week}
                   </p>
-                  <p className="text-gray-600 text-sm">{item.date}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {item.startDate} – {item.endDate}
+                  </p>
                 </div>
 
+                {/* ACTION */}
                 <div className="flex gap-3">
                   <a
                     href={item.pdfUrl}
                     target="_blank"
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg 
-                    bg-gradient-to-r from-blue-600 to-sky-500
-                    text-white hover:scale-105 transition font-medium"
+                    rel="noopener noreferrer"
+                    className="
+                      inline-flex items-center gap-2
+                      px-4 py-2 rounded-lg
+                      bg-gradient-to-r from-blue-600 to-sky-500
+                      text-white font-medium
+                      hover:shadow-md hover:scale-105
+                      transition
+                    "
                   >
-                    <FileText size={16} /> Lihat
+                    <FileText size={16} />
+                    Lihat
                   </a>
+
                   <a
                     href={item.pdfUrl}
                     download
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg 
-                    border border-blue-400 text-blue-600
-                    hover:bg-blue-50 transition font-medium"
+                    className="
+                      inline-flex items-center gap-2
+                      px-4 py-2 rounded-lg
+                      border border-blue-400
+                      text-blue-600 font-medium
+                      hover:bg-blue-50
+                      transition
+                    "
                   >
-                    <Download size={16} /> Download
+                    <Download size={16} />
+                    Unduh
                   </a>
                 </div>
               </motion.div>
@@ -152,33 +170,53 @@ export default function LogbookPage() {
           )}
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-5 mt-10 text-gray-800">
+        {/* PAGINATION */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-12">
             <button
               disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-              className={`px-4 py-2 rounded-lg border border-blue-200
-              ${page === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"}
-              transition`}
+              onClick={() => setPage((p) => p - 1)}
+              className="
+                px-4 py-2 rounded-lg
+                border border-blue-200
+                disabled:opacity-40
+                hover:bg-blue-50
+              "
             >
               Prev
             </button>
 
-            <span>Halaman {page} / {totalPages}</span>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`
+                  px-3 py-2 rounded-lg text-sm
+                  ${
+                    page === i + 1
+                      ? "bg-blue-600 text-white"
+                      : "border border-blue-200 hover:bg-blue-50"
+                  }
+                `}
+              >
+                {i + 1}
+              </button>
+            ))}
 
             <button
               disabled={page === totalPages}
-              onClick={() => setPage(p => p + 1)}
-              className={`px-4 py-2 rounded-lg border border-blue-200
-              ${page === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"}
-              transition`}
+              onClick={() => setPage((p) => p + 1)}
+              className="
+                px-4 py-2 rounded-lg
+                border border-blue-200
+                disabled:opacity-40
+                hover:bg-blue-50
+              "
             >
               Next
             </button>
           </div>
         )}
-
       </div>
     </section>
   );

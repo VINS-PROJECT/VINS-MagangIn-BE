@@ -12,38 +12,60 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Cek apakah sudah login → auto redirect
+  /* ================= CEK LOGIN ================= */
   useEffect(() => {
     fetch("/api/auth/me")
-      .then((res) => (res.ok ? router.push("/admin") : null))
+      .then((res) => {
+        if (res.ok) router.push("/admin");
+      })
       .catch(() => {});
-  }, []);
+  }, [router]);
 
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await res.json();
+      let data = null;
 
-    if (!res.ok) {
-      setError(data.message || "Login gagal");
-    } else {
+      // ⛑️ SAFE JSON PARSE
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Response server bukan JSON");
+      }
+
+      if (!res.ok) {
+        setError(data?.message || "Login gagal");
+        return;
+      }
+
+      // ✅ LOGIN BERHASIL
       router.push("/admin");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Terjadi kesalahan server");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
+  /* ================= UI ================= */
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-200 space-y-6">
 
+        {/* HEADER */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-blue-600 tracking-wide">
             MagangIn Admin
@@ -53,12 +75,14 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* Username */}
+          {/* USERNAME */}
           <div>
             <label className="text-sm text-gray-700 font-medium flex items-center gap-2">
-              <User className="w-4 h-4 text-blue-600" /> Username
+              <User className="w-4 h-4 text-blue-600" />
+              Username
             </label>
             <input
               type="text"
@@ -70,10 +94,11 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
+          {/* PASSWORD */}
           <div>
             <label className="text-sm text-gray-700 font-medium flex items-center gap-2">
-              <Lock className="w-4 h-4 text-blue-600" /> Kata Sandi
+              <Lock className="w-4 h-4 text-blue-600" />
+              Kata Sandi
             </label>
             <div className="relative mt-1">
               <input
@@ -94,8 +119,12 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {/* ERROR */}
+          {error && (
+            <p className="text-sm text-red-600">{error}</p>
+          )}
 
+          {/* SUBMIT */}
           <button
             type="submit"
             disabled={loading}

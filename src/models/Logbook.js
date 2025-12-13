@@ -1,21 +1,27 @@
-// src/models/Logbook.js
 import mongoose from "mongoose";
 
 const LogbookSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    day: { type: Number, required: true },
-    tanggal: { type: String, required: true },
-    fileUrl: { type: String, required: true }, // link ke PDF (S3 / storage lain)
-    catatan: { type: String },
-    status: {
-      type: String,
-      enum: ["pending", "approved", "revisi"],
-      default: "pending",
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    week: { type: Number },
+
+    week: {
+      type: Number, // Minggu ke-1, ke-2, dst
+      required: true,
+    },
+
+    startDate: String,
+    endDate: String,
+
+    ringkasan: { type: String, required: true },
+    pembelajaran: { type: String, required: true },
+    kendala: { type: String },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Logbook || mongoose.model("Logbook", LogbookSchema);
+export default mongoose.models.Logbook ||
+  mongoose.model("Logbook", LogbookSchema);

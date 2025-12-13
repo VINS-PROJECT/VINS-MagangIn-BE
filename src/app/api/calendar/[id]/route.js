@@ -1,42 +1,36 @@
-// src/app/api/admin/track/[id]/route.js
+// src/app/api/calendar/[id]/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
-import Track from "@/models/Track";
-import fs from "fs/promises";
-import path from "path";
+import Calendar from "@/models/Calendar";
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/* ================= GET DETAIL TRACK ================= */
+/* ================= GET DETAIL AGENDA ================= */
 export async function GET(_req, { params }) {
   try {
     await connectDB();
-
     const user = await getUserFromRequest();
-    if (!user) {
+    if (!user)
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
-    }
 
-    const track = await Track.findOne({
+    const agenda = await Calendar.findOne({
       _id: params.id,
       user: user._id,
     });
 
-    if (!track) {
+    if (!agenda)
       return NextResponse.json(
         { message: "Not found" },
         { status: 404 }
       );
-    }
 
-    return NextResponse.json({ data: track });
+    return NextResponse.json({ data: agenda });
   } catch (err) {
-    console.error("GET admin/track/:id error:", err);
+    console.error("GET calendar error:", err);
     return NextResponse.json(
       { message: "Error server" },
       { status: 500 }
@@ -44,40 +38,37 @@ export async function GET(_req, { params }) {
   }
 }
 
-/* ================= UPDATE TRACK ================= */
+/* ================= UPDATE AGENDA ================= */
 export async function PUT(req, { params }) {
   try {
     await connectDB();
-
     const user = await getUserFromRequest();
-    if (!user) {
+    if (!user)
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
-    }
 
     const body = await req.json();
 
-    const updated = await Track.findOneAndUpdate(
+    const updated = await Calendar.findOneAndUpdate(
       { _id: params.id, user: user._id },
       body,
       { new: true }
     );
 
-    if (!updated) {
+    if (!updated)
       return NextResponse.json(
         { message: "Not found" },
         { status: 404 }
       );
-    }
 
     return NextResponse.json({
-      message: "Track diupdate",
+      message: "Agenda diupdate",
       data: updated,
     });
   } catch (err) {
-    console.error("PUT admin/track/:id error:", err);
+    console.error("PUT calendar error:", err);
     return NextResponse.json(
       { message: "Error server" },
       { status: 500 }
@@ -85,55 +76,33 @@ export async function PUT(req, { params }) {
   }
 }
 
-/* ================= DELETE TRACK ================= */
+/* ================= DELETE AGENDA ================= */
 export async function DELETE(_req, { params }) {
   try {
     await connectDB();
-
     const user = await getUserFromRequest();
-    if (!user) {
+    if (!user)
       return NextResponse.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
-    }
 
-    const track = await Track.findOne({
+    const deleted = await Calendar.findOneAndDelete({
       _id: params.id,
       user: user._id,
     });
 
-    if (!track) {
+    if (!deleted)
       return NextResponse.json(
         { message: "Not found" },
         { status: 404 }
       );
-    }
-
-    /* 🔥 HAPUS FILE DOKUMENTASI (JIKA ADA) */
-    if (Array.isArray(track.dokumentasi)) {
-      for (const fileUrl of track.dokumentasi) {
-        try {
-          const filePath = path.join(
-            process.cwd(),
-            "public",
-            fileUrl.replace("/", "")
-          );
-          await fs.unlink(filePath);
-        } catch (e) {
-          // file boleh nggak ada → skip
-          console.warn("File skip:", fileUrl);
-        }
-      }
-    }
-
-    await Track.deleteOne({ _id: track._id });
 
     return NextResponse.json({
-      message: "Track berhasil dihapus",
+      message: "Agenda dihapus",
     });
   } catch (err) {
-    console.error("DELETE admin/track/:id error:", err);
+    console.error("DELETE calendar error:", err);
     return NextResponse.json(
       { message: "Error server" },
       { status: 500 }

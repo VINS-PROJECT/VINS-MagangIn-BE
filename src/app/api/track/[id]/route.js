@@ -1,6 +1,6 @@
 // src/app/api/track/[id]/route.js
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
+import connectDB from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
 import Track from "@/models/Track";
 

@@ -1,89 +1,109 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 
 export default function TrackHistory() {
-  const logs = [
-    { date: "23-11-2025", day: 12, activity: "Mengerjakan UI Dashboard VINS...", lesson: "Komponen reusable & API flow..." },
-    { date: "22-11-2025", day: 11, activity: "Membuat halaman Track & Input...", lesson: "Belajar handling form state..." },
-    { date: "21-11-2025", day: 10, activity: "Rapat dengan mentor...", lesson: "Cara menyusun laporan kerja..." },
-    { date: "20-11-2025", day: 9, activity: "Research animasi framer-motion...", lesson: "Optimasi animasi..." },
-    { date: "19-11-2025", day: 8, activity: "Membuat hero section...", lesson: "Gradient & layouting..." },
-  ];
-
+  const [logs, setLogs] = useState([]);
   const [search, setSearch] = useState("");
   const [filterDay, setFilterDay] = useState("");
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
+
+  async function loadData() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/admin/track", { cache: "no-store" });
+      const json = await res.json();
+      setLogs(json.data || []);
+    } catch (err) {
+      console.error("Gagal load track", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
       const matchesSearch =
-        log.activity.toLowerCase().includes(search.toLowerCase()) ||
-        log.lesson.toLowerCase().includes(search.toLowerCase());
-      const matchesDay = filterDay ? log.day === Number(filterDay) : true;
+        log.aktivitas?.toLowerCase().includes(search.toLowerCase()) ||
+        log.pelajaran?.toLowerCase().includes(search.toLowerCase());
+
+      const matchesDay = filterDay ? log.hari === Number(filterDay) : true;
       return matchesSearch && matchesDay;
     });
-  }, [search, filterDay, logs]);
+  }, [logs, search, filterDay]);
 
-  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage) || 1;
   const paginatedLogs = filteredLogs.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage
   );
 
   return (
-    <section className="relative bg-white text-gray-900 py-32 px-6 overflow-hidden">
+    <section className="relative overflow-clip bg-white text-gray-900 py-28 px-6">
 
-      {/* Blue Orb */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 0.08, scale: 1 }}
-        transition={{ duration: 2 }}
-        className="absolute left-[-180px] top-20 w-[400px] h-[400px] bg-sky-400 blur-[200px] rounded-full pointer-events-none"
-      />
+      {/* Soft glow */}
+      <div className="absolute -left-40 top-32 w-[360px] h-[360px] bg-sky-300/40 blur-[160px] rounded-full pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
 
-        {/* TITLE */}
-        <motion.h1
-          initial={{ opacity: 0, y: 25 }}
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-4xl font-extrabold text-center"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
         >
-          Riwayat{" "}
-          <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-            Track Harian
-          </span>
-        </motion.h1>
+          <h1 className="text-4xl font-extrabold">
+            Riwayat{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+              Aktivitas
+            </span>
+          </h1>
+          <p className="text-gray-600 mt-3">
+            Pantau progres dan catatan aktivitas kamu secara terstruktur
+          </p>
+        </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.85 }}
-          className="text-gray-600 text-center mt-3 mb-12"
-        >
-          Kelola dan lihat seluruh catatan aktivitas magangmu dengan mudah.
-        </motion.p>
-
-        {/* SEARCH + FILTER */}
-        <div className="flex flex-col md:flex-row gap-4 mb-10">
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
           <input
             type="text"
             placeholder="Cari aktivitas atau pelajaran..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-3 bg-white border border-blue-200 rounded-xl text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="
+              w-full px-4 py-3 rounded-xl
+              border border-blue-100
+              bg-white/80 backdrop-blur
+              focus:outline-none focus:ring-2 focus:ring-blue-500/20
+            "
           />
 
           <select
             value={filterDay}
-            onChange={(e) => setFilterDay(e.target.value)}
-            className="w-full md:w-48 px-4 py-3 bg-white border border-blue-200 rounded-xl text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+            onChange={(e) => {
+              setFilterDay(e.target.value);
+              setPage(1);
+            }}
+            className="
+              w-full md:w-52 px-4 py-3 rounded-xl
+              border border-blue-100
+              bg-white/80 backdrop-blur
+              focus:outline-none
+            "
           >
-            <option value="">Filter Day</option>
-            {[...new Set(logs.map((log) => log.day))].map((day) => (
+            <option value="">Semua Hari</option>
+            {[...new Set(logs.map((log) => log.hari))].map((day) => (
               <option key={day} value={day}>
                 Hari ke-{day}
               </option>
@@ -91,75 +111,101 @@ export default function TrackHistory() {
           </select>
         </div>
 
-        {/* TABLE */}
-        <div className="overflow-x-auto bg-white border border-blue-100 rounded-2xl shadow-lg">
-          <table className="w-full text-sm text-gray-700">
-            <thead className="bg-blue-50 text-blue-900 font-semibold">
-              <tr>
-                <th className="px-6 py-4">Tanggal</th>
-                <th className="px-6 py-4">Day</th>
-                <th className="px-6 py-4">Aktivitas</th>
-                <th className="px-6 py-4">Pelajaran</th>
-                <th className="px-6 py-4 text-center">Aksi</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {paginatedLogs.length > 0 ? (
-                paginatedLogs.map((log, index) => (
-                  <motion.tr
-                    key={index}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="border-b border-blue-100 hover:bg-blue-50 transition"
-                  >
-                    <td className="px-6 py-4">{log.date}</td>
-                    <td className="px-6 py-4">Hari ke-{log.day}</td>
-                    <td className="px-6 py-4">{log.activity}</td>
-                    <td className="px-6 py-4">{log.lesson}</td>
-                    <td className="px-6 py-4 text-center">
-                      <a
-                        href={`/track/detail/${index}`}
-                        className="px-4 py-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-lg hover:scale-105 transition"
-                      >
-                        Lihat
-                      </a>
-                    </td>
-                  </motion.tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="text-center py-6 text-gray-500 italic">
-                    Tidak ada data ditemukan.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        {/* Table Card */}
+        <div className="
+          bg-white/80 backdrop-blur
+          border border-blue-100/60
+          rounded-2xl
+          shadow-sm
+          overflow-hidden
+        ">
+          {loading ? (
+            <div className="py-12 text-center text-gray-500">
+              Memuat data...
+            </div>
+          ) : paginatedLogs.length === 0 ? (
+            <div className="py-12 text-center text-gray-500 italic">
+              Tidak ada data yang sesuai.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-blue-50/80 text-blue-900">
+                  <tr>
+                    <th className="px-6 py-4 text-left font-semibold">Tanggal</th>
+                    <th className="px-6 py-4 text-left font-semibold">Hari</th>
+                    <th className="px-6 py-4 text-left font-semibold">Aktivitas</th>
+                    <th className="px-6 py-4 text-left font-semibold">Pelajaran</th>
+                    <th className="px-6 py-4 text-center font-semibold">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedLogs.map((log) => (
+                    <motion.tr
+                      key={log._id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="border-t border-blue-100 hover:bg-blue-50/60 transition"
+                    >
+                      <td className="px-6 py-4">{log.tanggal}</td>
+                      <td className="px-6 py-4 font-semibold text-blue-600">
+                        Hari ke-{log.hari}
+                      </td>
+                      <td className="px-6 py-4">{log.aktivitas}</td>
+                      <td className="px-6 py-4">{log.pelajaran}</td>
+                      <td className="px-6 py-4 text-center">
+                        <a
+                          href={`/track/${log._id}`}
+                          className="
+                            inline-flex items-center justify-center
+                            px-4 py-2 rounded-lg
+                            bg-gradient-to-r from-blue-600 to-sky-500
+                            text-white font-medium
+                            hover:shadow-md hover:scale-105
+                            transition
+                          "
+                        >
+                          Detail
+                        </a>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
-        {/* PAGINATION */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-10 text-gray-800">
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-10">
             <button
               disabled={page === 1}
-              onClick={() => setPage((p) => p - 1)}
-              className={`px-4 py-2 rounded-lg border border-blue-200 ${
-                page === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"
-              } transition`}
+              onClick={() => setPage(page - 1)}
+              className="px-4 py-2 rounded-lg border border-blue-200 disabled:opacity-40 hover:bg-blue-50"
             >
               Prev
             </button>
 
-            <span>Halaman {page} dari {totalPages}</span>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`
+                  px-3 py-2 rounded-lg text-sm
+                  ${page === i + 1
+                    ? "bg-blue-600 text-white"
+                    : "border border-blue-200 hover:bg-blue-50"}
+                `}
+              >
+                {i + 1}
+              </button>
+            ))}
 
             <button
               disabled={page === totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-lg border border-blue-200 ${
-                page === totalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-blue-50"
-              } transition`}
+              onClick={() => setPage(page + 1)}
+              className="px-4 py-2 rounded-lg border border-blue-200 disabled:opacity-40 hover:bg-blue-50"
             >
               Next
             </button>
