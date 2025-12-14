@@ -2,32 +2,20 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  passwordHash: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    default: "user",
-  },
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, default: "admin" },
 });
 
-/* HASH PASSWORD */
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("passwordHash")) return next();
-  this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-/* COMPARE PASSWORD */
-UserSchema.methods.comparePassword = async function (password) {
-  return bcrypt.compare(password, this.passwordHash);
+UserSchema.methods.comparePassword = function (candidate) {
+  return bcrypt.compare(candidate, this.password);
 };
 
-export default mongoose.models.User ||
-  mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+export default User;
