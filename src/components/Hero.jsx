@@ -4,11 +4,11 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative pt-36 pb-40 overflow-clip bg-white">
+    <section className="relative pt-40 pb-44 overflow-hidden bg-white">
 
-      {/* MASK – kontrol overflow glow */}
+      {/* MASK – bottom fade */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white to-transparent" />
       </div>
 
       {/* CONTENT */}
@@ -17,20 +17,36 @@ export default function Hero() {
           initial="hidden"
           animate="visible"
           variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.14 },
-            },
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.16 } },
           }}
         >
+          {/* EYEBROW / BADGE */}
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
+            transition={{ duration: 0.7 }}
+            className="
+              inline-flex items-center gap-2
+              px-4 py-2 mb-6
+              rounded-full
+              bg-blue-50/80 backdrop-blur
+              border border-blue-200/60
+              text-sm font-medium text-blue-700
+            "
+          >
+            <Sparkles size={16} className="text-blue-500" />
+            Productivity & Progress Platform
+          </motion.div>
+
           {/* TITLE */}
           <motion.h1
-            variants={{ hidden: { y: 22 }, visible: { y: 0 } }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            variants={{ hidden: { y: 26, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
             className="
-              text-5xl md:text-6xl font-extrabold
-              leading-tight tracking-tight
+              text-5xl md:text-6xl xl:text-7xl
+              font-extrabold
+              leading-[1.1]
+              tracking-tight
               text-gray-900
             "
           >
@@ -39,13 +55,14 @@ export default function Hero() {
             dengan{" "}
             <span className="relative inline-block bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
               VINSGawe
-              {/* shimmer */}
+              {/* SHIMMER */}
               <motion.span
+                aria-hidden
                 animate={{ x: ["-120%", "120%"] }}
                 transition={{
-                  duration: 3,
+                  duration: 3.2,
                   repeat: Infinity,
-                  repeatDelay: 2,
+                  repeatDelay: 2.5,
                   ease: "linear",
                 }}
                 className="
@@ -60,11 +77,12 @@ export default function Hero() {
 
           {/* SUBTITLE */}
           <motion.p
-            variants={{ hidden: { y: 20 }, visible: { y: 0 } }}
+            variants={{ hidden: { y: 18, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
             transition={{ duration: 0.9, ease: "easeOut" }}
             className="
-              mt-6 max-w-2xl
-              text-lg leading-relaxed
+              mt-7 max-w-2xl
+              text-lg md:text-xl
+              leading-relaxed
               text-gray-600
             "
           >
@@ -77,16 +95,16 @@ export default function Hero() {
           <motion.div
             variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
             transition={{ duration: 1 }}
-            className="mt-10 flex flex-wrap gap-4"
+            className="mt-12 flex flex-wrap items-center gap-4"
           >
             <motion.button
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.96 }}
               className="
-                px-7 py-3.5 rounded-full
+                px-8 py-4 rounded-full
                 bg-gradient-to-r from-blue-600 to-sky-500
                 text-white font-semibold
-                shadow-lg shadow-blue-500/25
+                shadow-[0_16px_40px_rgba(37,99,235,0.35)]
                 flex items-center gap-2
                 transition
               "
@@ -99,8 +117,8 @@ export default function Hero() {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="
-                px-7 py-3.5 rounded-full
-                border border-blue-400/60
+                px-8 py-4 rounded-full
+                border border-blue-300/70
                 text-blue-600 font-semibold
                 hover:bg-blue-50
                 transition
@@ -109,51 +127,32 @@ export default function Hero() {
               Lihat Cara Kerja
             </motion.button>
           </motion.div>
-
-          {/* STATUS BADGE */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className="
-              mt-8 inline-flex items-center gap-2
-              text-sm font-medium
-              text-blue-700
-              px-4 py-2 rounded-full
-              bg-blue-50/80
-              border border-blue-200/70
-              backdrop-blur
-            "
-          >
-            <Sparkles size={16} className="text-blue-500" />
-            Productivity & progress tracking platform
-          </motion.div>
         </motion.div>
       </div>
 
-      {/* SOFT GLOWS – VINSGawe scale */}
+      {/* SOFT GLOWS */}
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 0.06 }}
-        transition={{ duration: 2 }}
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.08 }}
+        transition={{ duration: 2.2, ease: "easeOut" }}
         className="
-          absolute right-[-120px] top-1/4
-          w-[340px] h-[340px]
+          absolute right-[-140px] top-1/4
+          w-[380px] h-[380px]
           bg-sky-400 rounded-full
-          blur-[140px]
+          blur-[160px]
           pointer-events-none
         "
       />
 
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 0.06 }}
-        transition={{ duration: 2.4 }}
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 0.08 }}
+        transition={{ duration: 2.6, ease: "easeOut" }}
         className="
-          absolute left-[-140px] bottom-[-120px]
-          w-[360px] h-[360px]
+          absolute left-[-160px] bottom-[-140px]
+          w-[420px] h-[420px]
           bg-blue-600 rounded-full
-          blur-[140px]
+          blur-[160px]
           pointer-events-none
         "
       />

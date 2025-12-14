@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import {
   PlusCircle,
   NotebookPen,
   Calendar,
+  Activity,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -19,7 +21,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadStats() {
       try {
-        const res = await fetch("/api/admin/stats");
+        const res = await fetch("/api/admin/stats", { cache: "no-store" });
         const data = await res.json();
         setStats(data);
       } catch (e) {
@@ -38,8 +40,12 @@ export default function DashboardPage() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="h-28 rounded-2xl bg-white/60 backdrop-blur-xl
-            border border-white/40 animate-pulse"
+            className="
+              h-28 rounded-2xl
+              bg-white/60 backdrop-blur-xl
+              border border-white/40
+              animate-pulse
+            "
           />
         ))}
       </div>
@@ -48,19 +54,19 @@ export default function DashboardPage() {
 
   /* ================= METRICS ================= */
   const metrics = [
-    { label: "Day Ke-", value: stats?.day ?? "-", icon: CalendarDays },
+    { label: "Hari Ke-", value: stats?.day ?? "-", icon: CalendarDays },
     {
-      label: "Total Track Berjalan",
+      label: "Track Berjalan",
       value: stats?.totalTrack ?? 0,
       icon: FolderKanban,
     },
     {
-      label: "Total Dokumentasi",
+      label: "Dokumentasi",
       value: stats?.totalDocs ?? 0,
       icon: ImageIcon,
     },
     {
-      label: "Total Logbook",
+      label: "Logbook",
       value: stats?.totalLogbook ?? 0,
       icon: FileText,
     },
@@ -75,13 +81,13 @@ export default function DashboardPage() {
   const recentActivity = stats?.recent ?? [];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
 
-      {/* ================= STAT CARDS ================= */}
+      {/* ================= METRICS ================= */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
       >
         {metrics.map((item, i) => (
@@ -91,10 +97,10 @@ export default function DashboardPage() {
             transition={{ duration: 0.25 }}
             className="
               relative p-6 rounded-2xl
-              bg-white/70 backdrop-blur-xl
-              border border-white/40
-              shadow-[0_20px_40px_rgba(0,0,0,0.08)]
-              hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)]
+              bg-white/80 backdrop-blur-xl
+              border border-blue-200/50
+              shadow-[0_12px_36px_rgba(0,0,0,0.08)]
+              hover:shadow-[0_20px_50px_rgba(37,99,235,0.18)]
               transition
             "
           >
@@ -103,8 +109,13 @@ export default function DashboardPage() {
 
             <div className="relative flex items-center gap-4">
               <div
-                className="flex items-center justify-center w-12 h-12 rounded-xl
-                bg-gradient-to-br from-blue-600 to-sky-500 text-white shadow-md"
+                className="
+                  flex items-center justify-center
+                  w-12 h-12 rounded-xl
+                  bg-gradient-to-br from-blue-600 to-sky-500
+                  text-white
+                  shadow-md
+                "
               >
                 <item.icon className="w-6 h-6" />
               </div>
@@ -122,50 +133,71 @@ export default function DashboardPage() {
         ))}
       </motion.div>
 
-      {/* ================= GRID BAWAH ================= */}
+      {/* ================= MIDDLE GRID ================= */}
       <div className="grid lg:grid-cols-3 gap-8">
 
-        {/* ===== PROGRESS ===== */}
-        <div className="lg:col-span-1 p-6 rounded-2xl
-          bg-white/70 backdrop-blur-xl border border-white/40 shadow-md">
-          <h3 className="font-semibold text-slate-800 mb-4">
+        {/* PROGRESS */}
+        <div
+          className="
+            p-6 rounded-2xl
+            bg-white/80 backdrop-blur-xl
+            border border-blue-200/50
+            shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+          "
+        >
+          <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-blue-600" />
             Progress Mingguan
           </h3>
 
-          <div className="space-y-3">
-            <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+          <div className="space-y-4">
+            <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-600 to-sky-500 transition-all"
+                className="
+                  h-full
+                  bg-gradient-to-r from-blue-600 to-sky-500
+                  transition-all
+                "
                 style={{ width: `${weekProgress}%` }}
               />
             </div>
-            <p className="text-sm text-slate-600">
-              {completedTrack}/7 track selesai
-            </p>
 
-            <span
-              className={`inline-block text-xs font-semibold px-3 py-1 rounded-full
-              ${
-                weekProgress >= 100
-                  ? "bg-green-100 text-green-700"
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-600">
+                {completedTrack}/7 track selesai
+              </span>
+
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold
+                  ${
+                    weekProgress >= 100
+                      ? "bg-green-100 text-green-700"
+                      : weekProgress >= 60
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                  }
+                `}
+              >
+                {weekProgress >= 100
+                  ? "Selesai"
                   : weekProgress >= 60
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {weekProgress >= 100
-                ? "Selesai"
-                : weekProgress >= 60
-                ? "On Track"
-                : "Perlu Perhatian"}
-            </span>
+                  ? "On Track"
+                  : "Perlu Perhatian"}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* ===== QUICK ACTIONS ===== */}
-        <div className="lg:col-span-2 p-6 rounded-2xl
-          bg-white/70 backdrop-blur-xl border border-white/40 shadow-md">
-          <h3 className="font-semibold text-slate-800 mb-4">
+        {/* QUICK ACTIONS */}
+        <div
+          className="
+            lg:col-span-2 p-6 rounded-2xl
+            bg-white/80 backdrop-blur-xl
+            border border-blue-200/50
+            shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+          "
+        >
+          <h3 className="font-semibold text-slate-800 mb-5">
             Aksi Cepat
           </h3>
 
@@ -190,9 +222,14 @@ export default function DashboardPage() {
               <Link
                 key={i}
                 href={item.href}
-                className="flex items-center gap-3 p-4 rounded-xl
-                bg-white border border-slate-200
-                hover:bg-blue-50 transition text-sm font-semibold"
+                className="
+                  flex items-center gap-3 p-4 rounded-xl
+                  bg-white border border-blue-200/60
+                  hover:bg-blue-50
+                  hover:shadow-md
+                  transition
+                  text-sm font-semibold
+                "
               >
                 <item.icon className="w-5 h-5 text-blue-600" />
                 {item.label}
@@ -203,8 +240,14 @@ export default function DashboardPage() {
       </div>
 
       {/* ================= RECENT ACTIVITY ================= */}
-      <div className="p-6 rounded-2xl
-        bg-white/70 backdrop-blur-xl border border-white/40 shadow-md">
+      <div
+        className="
+          p-6 rounded-2xl
+          bg-white/80 backdrop-blur-xl
+          border border-blue-200/50
+          shadow-[0_10px_30px_rgba(0,0,0,0.06)]
+        "
+      >
         <h3 className="font-semibold text-slate-800 mb-4">
           Aktivitas Terakhir
         </h3>
@@ -220,8 +263,8 @@ export default function DashboardPage() {
                 key={i}
                 className="flex justify-between items-center text-slate-600"
               >
-                <span>{item.title}</span>
-                <span className="text-xs text-slate-400">
+                <span className="truncate">{item.title}</span>
+                <span className="text-xs text-slate-400 whitespace-nowrap">
                   {item.date}
                 </span>
               </li>

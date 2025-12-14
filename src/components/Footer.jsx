@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Twitter, Linkedin, Instagram, Youtube } from "lucide-react";
+import { Linkedin, Instagram } from "lucide-react";
 
 export default function Footer() {
   const navLinks = [
@@ -13,43 +13,48 @@ export default function Footer() {
   ];
 
   const socials = [
-    { icon: <Linkedin size={18} />, url: "https://www.linkedin.com/in/kevinsimorangkir/" },
-    { icon: <Instagram size={18} />, url: "https://instagram.com/vins.ch" },
+    {
+      icon: <Linkedin size={18} />,
+      url: "https://www.linkedin.com/in/kevinsimorangkir/",
+    },
+    {
+      icon: <Instagram size={18} />,
+      url: "https://instagram.com/vins.ch",
+    },
   ];
 
   return (
-    <footer className="relative overflow-clip bg-white text-gray-800 pt-20 pb-8 border-t border-blue-100">
+    <footer className="relative overflow-hidden bg-white text-gray-800 pt-24 pb-10 border-t border-blue-100">
 
-      {/* MASK – kontrol glow */}
+      {/* MASK – top fade */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white to-transparent" />
       </div>
 
-      {/* SOFT GLOW – VINSGawe scale */}
+      {/* SOFT GLOW */}
       <div
         className="
-          absolute right-[-120px] bottom-[-120px]
-          w-[320px] h-[320px]
+          absolute right-[-140px] bottom-[-140px]
+          w-[360px] h-[360px]
           bg-sky-400/30
-          rounded-full blur-[140px]
+          rounded-full blur-[160px]
           pointer-events-none
         "
       />
 
       {/* CONTENT */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 grid gap-12 md:grid-cols-3 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 grid gap-14 md:grid-cols-3 relative z-10">
 
         {/* BRAND */}
         <div>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-5">
             <div
               className="
-                w-10 h-10 rounded-xl
-                bg-white/80 backdrop-blur
+                w-11 h-11 rounded-xl
+                bg-white/85 backdrop-blur
                 border border-gray-200/60
                 shadow-sm
                 flex items-center justify-center
-                overflow-hidden
               "
             >
               <Image
@@ -61,21 +66,21 @@ export default function Footer() {
               />
             </div>
 
-            <span className="text-lg font-semibold text-gray-900 tracking-tight">
+            <span className="text-lg font-semibold tracking-tight text-gray-900">
               VINS
-              <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+              <span className="ml-1 bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
                 Gawe
               </span>
             </span>
           </div>
 
-          <p className="text-sm leading-relaxed text-gray-600 max-w-xs">
+          <p className="text-sm leading-relaxed text-gray-600 max-w-sm">
             Platform produktivitas personal untuk mencatat aktivitas,
             memantau progres, dan mengelola pekerjaan atau magang
             secara terstruktur dan profesional.
           </p>
 
-          <p className="text-sm mt-4 text-gray-600">
+          <p className="text-sm mt-5 text-gray-600">
             <span className="font-medium text-gray-800">Email:</span>{" "}
             vin.simorangkir81@gmail.com
           </p>
@@ -83,8 +88,10 @@ export default function Footer() {
 
         {/* NAVIGATION */}
         <div>
-          <h4 className="font-semibold text-gray-900 mb-4">Navigasi</h4>
-          <ul className="space-y-2 text-sm">
+          <h4 className="font-semibold text-gray-900 mb-5">
+            Navigasi
+          </h4>
+          <ul className="space-y-3 text-sm">
             {navLinks.map((item) => (
               <li key={item.href}>
                 <Link
@@ -105,8 +112,10 @@ export default function Footer() {
 
         {/* SOCIAL */}
         <div>
-          <h4 className="font-semibold text-gray-900 mb-4">Terhubung</h4>
-          <p className="text-sm mb-5 text-gray-600 max-w-xs">
+          <h4 className="font-semibold text-gray-900 mb-5">
+            Terhubung
+          </h4>
+          <p className="text-sm mb-6 text-gray-600 max-w-xs">
             Ikuti pembaruan dan informasi terbaru dari VINSGawe.
           </p>
 
@@ -118,13 +127,13 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
-                  w-10 h-10
+                  w-11 h-11
                   flex items-center justify-center
                   rounded-xl
-                  bg-white/80 backdrop-blur
+                  bg-white/85 backdrop-blur
                   border border-gray-200/60
                   shadow-sm
-                  hover:shadow-md
+                  hover:shadow-lg hover:shadow-blue-500/10
                   hover:border-blue-400
                   hover:text-blue-600
                   transition-all duration-300
@@ -138,10 +147,19 @@ export default function Footer() {
       </div>
 
       {/* BOTTOM */}
-      <div className="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-600 relative z-10">
+      <div className="mt-14 pt-6 border-t border-gray-200 text-center text-sm text-gray-600 relative z-10">
         © {new Date().getFullYear()}{" "}
-        <span className="font-semibold text-gray-900">VINSGawe</span> by <a href="https://kvn-code.asia/" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">VINS. </a>
-        Seluruh hak cipta dilindungi.
+        <span className="font-semibold text-gray-900">VINSGawe</span>{" "}
+        by{" "}
+        <a
+          href="https://kvn-code.asia/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4 hover:text-blue-600 transition"
+        >
+          VINS
+        </a>
+        . Seluruh hak cipta dilindungi.
       </div>
     </footer>
   );

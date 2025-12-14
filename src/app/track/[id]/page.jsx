@@ -60,12 +60,12 @@ export default function TrackDetailPublicPage() {
   }
 
   return (
-    <section className="relative overflow-clip bg-white py-28 px-6">
+    <section className="relative overflow-hidden bg-white py-32 px-6">
 
-      {/* Soft Glow */}
-      <div className="absolute -left-40 top-32 w-[360px] h-[360px] bg-sky-300/40 blur-[160px] rounded-full pointer-events-none" />
+      {/* SOFT GLOW */}
+      <div className="absolute -left-48 top-40 w-[420px] h-[420px] bg-sky-300/30 blur-[180px] rounded-full pointer-events-none" />
 
-      <div className="max-w-4xl mx-auto relative z-10 space-y-10">
+      <div className="max-w-4xl mx-auto relative z-10 space-y-12">
 
         {/* BACK */}
         <Link
@@ -78,27 +78,27 @@ export default function TrackDetailPublicPage() {
 
         {/* HEADER */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
           className="
-            p-8 rounded-2xl
-            bg-white/80 backdrop-blur
-            border border-blue-100/60
-            shadow-sm
+            p-9 rounded-3xl
+            bg-white/85 backdrop-blur-xl
+            border border-blue-200/50
+            shadow-[0_12px_40px_rgba(0,0,0,0.08)]
           "
         >
-          <h1 className="text-3xl font-extrabold text-gray-900">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
             Hari ke-{data.hari}
           </h1>
 
-          <div className="flex items-center gap-2 mt-3 text-gray-600">
+          <div className="flex items-center gap-2 mt-4 text-gray-600">
             <CalendarDays size={16} />
             <span>{data.tanggal}</span>
           </div>
         </motion.div>
 
-        {/* DETAIL */}
+        {/* DETAILS */}
         <div className="space-y-8">
           <DetailCard
             icon={<ClipboardList size={18} />}
@@ -120,17 +120,17 @@ export default function TrackDetailPublicPage() {
 
           {/* DOKUMENTASI */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
             className="
-              p-8 rounded-2xl
-              bg-white/80 backdrop-blur
-              border border-blue-100/60
-              shadow-sm
+              p-9 rounded-3xl
+              bg-white/85 backdrop-blur-xl
+              border border-blue-200/50
+              shadow-[0_12px_40px_rgba(0,0,0,0.08)]
             "
           >
-            <div className="flex items-center gap-2 mb-4 text-blue-700 font-semibold">
+            <div className="flex items-center gap-2 mb-6 text-blue-700 font-semibold">
               <ImageIcon size={18} />
               Dokumentasi
             </div>
@@ -146,11 +146,13 @@ export default function TrackDetailPublicPage() {
                     key={i}
                     src={img}
                     onClick={() => setSelectedImg(img)}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.06 }}
+                    transition={{ duration: 0.25 }}
                     className="
-                      w-full h-40 object-cover rounded-xl
+                      w-full h-40 object-cover rounded-2xl
                       cursor-pointer
-                      border border-blue-100
+                      border border-blue-200/50
+                      shadow-sm
                     "
                     alt={`Dokumentasi ${i + 1}`}
                   />
@@ -170,19 +172,19 @@ export default function TrackDetailPublicPage() {
             exit={{ opacity: 0 }}
             className="
               fixed inset-0 z-50
-              bg-black/70
+              bg-black/75
               flex items-center justify-center
               p-6
             "
             onClick={() => setSelectedImg(null)}
           >
             <motion.img
-              initial={{ scale: 0.9 }}
+              initial={{ scale: 0.92 }}
               animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
+              exit={{ scale: 0.92 }}
               transition={{ duration: 0.25 }}
               src={selectedImg}
-              className="max-w-5xl max-h-[90vh] rounded-xl shadow-2xl"
+              className="max-w-5xl max-h-[90vh] rounded-2xl shadow-2xl"
               alt="Preview dokumentasi"
             />
           </motion.div>
@@ -196,17 +198,17 @@ export default function TrackDetailPublicPage() {
 function DetailCard({ title, value, icon }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.6 }}
       className="
-        p-8 rounded-2xl
-        bg-white/80 backdrop-blur
-        border border-blue-100/60
-        shadow-sm
+        p-9 rounded-3xl
+        bg-white/85 backdrop-blur-xl
+        border border-blue-200/50
+        shadow-[0_12px_40px_rgba(0,0,0,0.08)]
       "
     >
-      <div className="flex items-center gap-2 mb-3 text-blue-700 font-semibold">
+      <div className="flex items-center gap-2 mb-4 text-blue-700 font-semibold">
         {icon}
         {title}
       </div>

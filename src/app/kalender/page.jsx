@@ -57,9 +57,11 @@ function getMonthMatrix(year, month) {
 /* ================= PAGE ================= */
 export default function KalenderPage() {
   const today = new Date();
+  const todayKey = formatDateKey(today);
+
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
-  const [selectedDate, setSelectedDate] = useState(formatDateKey(today));
+  const [selectedDate, setSelectedDate] = useState(todayKey);
 
   const [eventsByDate, setEventsByDate] = useState({});
   const [loading, setLoading] = useState(true);
@@ -84,11 +86,9 @@ export default function KalenderPage() {
           });
         });
 
-        Object.keys(map).forEach((k) => {
-          map[k].sort((x, y) =>
-            (x.time || "").localeCompare(y.time || "")
-          );
-        });
+        Object.keys(map).forEach((k) =>
+          map[k].sort((x, y) => (x.time || "").localeCompare(y.time || ""))
+        );
 
         setEventsByDate(map);
       } catch (err) {
@@ -117,33 +117,31 @@ export default function KalenderPage() {
 
   const goPrevMonth = () => {
     setSelectedDate("");
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear((y) => y - 1);
-    } else setCurrentMonth((m) => m - 1);
+    currentMonth === 0
+      ? (setCurrentMonth(11), setCurrentYear((y) => y - 1))
+      : setCurrentMonth((m) => m - 1);
   };
 
   const goNextMonth = () => {
     setSelectedDate("");
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear((y) => y + 1);
-    } else setCurrentMonth((m) => m + 1);
+    currentMonth === 11
+      ? (setCurrentMonth(0), setCurrentYear((y) => y + 1))
+      : setCurrentMonth((m) => m + 1);
   };
 
   /* ================= RENDER ================= */
   return (
-    <section className="relative overflow-clip bg-white py-28 px-6">
+    <section className="relative overflow-hidden bg-white py-32 px-6">
 
       {/* SOFT GLOW */}
-      <div className="absolute -right-40 top-40 w-[360px] h-[360px] bg-sky-300/40 blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute -right-48 top-40 w-[420px] h-[420px] bg-sky-300/30 blur-[180px] rounded-full pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
 
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-12">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-14">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold flex items-center gap-2">
+            <h1 className="text-3xl md:text-4xl font-extrabold flex items-center gap-3">
               <CalendarDays className="w-8 h-8 text-blue-600" />
               Kalender{" "}
               <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
@@ -156,18 +154,18 @@ export default function KalenderPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={goPrevMonth}
-              className="p-2 rounded-xl border border-blue-100 hover:bg-blue-50"
+              className="p-2.5 rounded-xl border border-blue-200 hover:bg-blue-50 transition"
             >
               <ChevronLeft size={18} />
             </button>
 
-            <div className="px-4 py-2 rounded-xl bg-blue-50 text-sm font-semibold text-blue-700 border border-blue-100">
+            <div className="px-5 py-2.5 rounded-xl bg-blue-50 text-sm font-semibold text-blue-700 border border-blue-200/60">
               {monthText}
             </div>
 
             <button
               onClick={goNextMonth}
-              className="p-2 rounded-xl border border-blue-100 hover:bg-blue-50"
+              className="p-2.5 rounded-xl border border-blue-200 hover:bg-blue-50 transition"
             >
               <ChevronRight size={18} />
             </button>
@@ -178,8 +176,8 @@ export default function KalenderPage() {
         <div className="grid lg:grid-cols-[2fr,1.2fr] gap-8">
 
           {/* CALENDAR */}
-          <div className="rounded-2xl bg-white/80 backdrop-blur border border-blue-100/60 shadow-sm p-6">
-            <div className="grid grid-cols-7 text-center text-sm text-gray-600 mb-3 font-medium">
+          <div className="rounded-2xl bg-white/85 backdrop-blur-xl border border-blue-200/50 shadow-[0_10px_30px_rgba(0,0,0,0.06)] p-6">
+            <div className="grid grid-cols-7 text-center text-sm text-gray-600 mb-4 font-medium">
               {weekDays.map((d) => (
                 <div key={d}>{d}</div>
               ))}
@@ -191,27 +189,30 @@ export default function KalenderPage() {
                   const dateKey = formatDateKey(cell.date);
                   const hasEvents = !!eventsByDate[dateKey];
                   const isSelected = selectedDate === dateKey;
+                  const isToday = dateKey === todayKey;
 
                   return (
                     <button
                       key={`${wi}-${ci}`}
                       onClick={() => setSelectedDate(dateKey)}
                       className={`
-                        rounded-lg py-2 text-sm transition
+                        relative rounded-xl py-2.5 text-sm font-medium transition
                         ${cell.inCurrent ? "text-gray-900" : "text-gray-400"}
                         ${
                           isSelected
-                            ? "bg-blue-600 text-white"
+                            ? "bg-blue-600 text-white shadow-md"
                             : "hover:bg-blue-50"
                         }
+                        ${isToday && !isSelected ? "ring-2 ring-blue-400/40" : ""}
                       `}
                     >
                       {cell.date.getDate()}
                       {hasEvents && (
                         <span
-                          className={`block w-1.5 h-1.5 mx-auto mt-1 rounded-full ${
-                            isSelected ? "bg-white" : "bg-blue-500"
-                          }`}
+                          className={`absolute bottom-1.5 left-1/2 -translate-x-1/2
+                            w-1.5 h-1.5 rounded-full
+                            ${isSelected ? "bg-white" : "bg-blue-500"}
+                          `}
                         />
                       )}
                     </button>
@@ -222,13 +223,13 @@ export default function KalenderPage() {
           </div>
 
           {/* EVENT PANEL */}
-          <div className="rounded-2xl bg-white/80 backdrop-blur border border-blue-100/60 shadow-sm p-6">
-            <h2 className="text-lg font-bold flex items-center gap-2">
+          <div className="rounded-2xl bg-white/85 backdrop-blur-xl border border-blue-200/50 shadow-[0_10px_30px_rgba(0,0,0,0.06)] p-6">
+            <h2 className="text-lg font-bold flex items-center gap-2 mb-1">
               <Bookmark size={18} className="text-blue-600" />
               Agenda Harian
             </h2>
 
-            <p className="text-xs text-gray-500 mt-1 mb-4">
+            <p className="text-xs text-gray-500 mb-5">
               {selectedDate || "Pilih tanggal"}
             </p>
 
@@ -243,10 +244,10 @@ export default function KalenderPage() {
                 {selectedEvents.map((ev, i) => (
                   <div
                     key={i}
-                    className="p-4 rounded-xl bg-blue-50/70 border border-blue-100"
+                    className="p-4 rounded-xl bg-blue-50/70 border border-blue-200/50"
                   >
                     <span
-                      className={`text-[11px] px-2 py-1 rounded-full text-white ${
+                      className={`text-[11px] px-2.5 py-1 rounded-full text-white ${
                         ev.type === "Logbook"
                           ? "bg-green-500"
                           : "bg-blue-500"
@@ -289,7 +290,7 @@ function LiveClock() {
   }, []);
 
   return (
-    <p className="text-sm text-blue-600 mt-1">
+    <p className="text-sm text-blue-600 mt-2">
       ⏱ {now.toLocaleString("id-ID")}
     </p>
   );
