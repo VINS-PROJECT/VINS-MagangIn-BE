@@ -1,30 +1,27 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 
-dotenv.config();
+let cached = global.mongoose;
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("❌ MONGODB_URI belum di-set di file .env");
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-let cached = global.mongoose || { conn: null, promise: null };
-
-async function connectDB() {
+export default async function connectDB() {
   if (cached.conn) return cached.conn;
 
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is not set");
+  }
+
   if (!cached.promise) {
-    cached.promise = mongoose
-      .connect(MONGODB_URI, {
-        dbName: "magangin",
-      })
-      .then((mongoose) => mongoose);
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      dbName: "magangin",
+      bufferCommands: false,
+    });
   }
 
   cached.conn = await cached.promise;
   return cached.conn;
 }
-
-global.mongoose = cached;
-export default connectDB;
